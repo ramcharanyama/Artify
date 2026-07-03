@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Artify – Luxury Custom Portrait Marketplace</title>
+   <link rel="stylesheet" href="style.css">
+   <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet">
+</head>
+
+<body>
+
+   <!-- Top Navigation (Dynamically swapped via JS class "customer-nav" or "artist-nav") -->
+   <nav class="navbar" id="mainNav">
+      <div class="logo" onclick="goHome()">Artify.</div>
+
+      <!-- Customer Links -->
+      <ul class="nav-links" id="navCustomerLinks">
+         <li><a href="#" onclick="goHome()">Home</a></li>
+         <li><a href="#" onclick="navigateTo('view-gallery')">Gallery</a></li>
+         <li><a href="#" onclick="navigateTo('view-commission')">Custom Order</a></li>
+         <li><a href="#" onclick="navigateTo('view-forum')">Community</a></li>
+         <li><a href="#" onclick="navigateTo('view-dashboard')">My Orders</a></li>
+         <li><a href="#" onclick="navigateTo('view-wishlist')">Wishlist <span id="wishCount" class="badge">0</span></a>
+         </li>
+      </ul>
+
+      <!-- Artist Links (Hidden by default) -->
+      <ul class="nav-links" id="navArtistLinks" style="display:none;">
+         <li><a href="#" onclick="navigateTo('view-artist-home')">Dashboard</a></li>
+         <li><a href="#" onclick="navigateTo('view-artist-commissions')">My Commissions</a></li>
+         <li><a href="#" onclick="navigateTo('view-artist-upload')">Upload Artwork</a></li>
+         <li><a href="#" onclick="navigateTo('view-forum')">Community</a></li>
+         <li><a href="#" onclick="navigateTo('view-artist-earnings')">Earnings</a></li>
+      </ul>
+
+      <div class="nav-actions">
+         <!-- Profile Dropdown -->
+         <div class="profile-dropdown-wrapper">
+            <button class="btn-primary" id="loginBtnNav" onclick="toggleLoginModal()">Sign In</button>
+            <div id="userMenuWrapper" style="display:none; position:relative;">
+               <button class="profile-icon-btn" onclick="toggleDropdown()">
+                  <img src="https://ui-avatars.com/api/?name=User&background=E5C158&color=141414" id="navAvatarImg"
+                     class="nav-avatar" alt="Profile">
+               </button>
+               <div class="dropdown-menu" id="profileDropdown">
+                  <!-- Customer Dropdown Items -->
+                  <div id="ddCustomerOnly">
+                     <a href="#" onclick="navigateTo('view-user-profile'); switchProfileTab('info'); closeDropdown()">👤
+                        My Profile</a>
+                     <a href="#" onclick="navigateTo('view-dashboard'); closeDropdown()">📦 My Orders</a>
+                  </div>
+                  <!-- Artist Dropdown Items -->
+                  <div id="ddArtistOnly" style="display:none;">
+                     <a href="#" onclick="navigateTo('view-artist-home'); closeDropdown()">🎨 Artist Portal</a>
+                     <a href="#" onclick="navigateTo('view-user-profile'); switchProfileTab('info'); closeDropdown()">👤
+                        My Details</a>
+                  </div>
+
+                  <a href="#"
+                     onclick="navigateTo('view-user-profile'); switchProfileTab('settings'); closeDropdown()">⚙️
+                     Settings</a>
+                  <hr>
+                  <a href="#" onclick="handleLogout()" style="color:var(--secondary)">🚪 Log Out</a>
+               </div>
+            </div>
+         </div>
+      </div>
+   </nav>
+
+   <main id="app-container">
+
+      <!-- ==========================================
+         VIEW: CUSTOMER HOME
+         ========================================== -->
+      <section id="view-home" class="page-module active">
+         <div class="hero" id="heroGuest">
+            <div class="hero-content">
+               <h1>Turn memories into <i>masterpieces.</i></h1>
+               <p>Commission unique handcrafted portraits from world-class artists or purchase exclusive pre-made
+                  artworks directly.</p>
+               <div class="hero-btns mt-4 flex-gap justify-center">
+                  <button class="btn-primary large glossy" onclick="navigateTo('view-gallery')">Browse Gallery</button>
+                  <button class="btn-secondary large glossy-alt" onclick="navigateTo('view-commission')">Custom
+                     Portrait</button>
+               </div>
+            </div>
+         </div>
+
+
+
+         <div class="content-section pt-0">
+            <div class="section-header text-center mb-5">
+               <h2>See the Transformation</h2>
+               <p>Drag the slider to compare original photo with the final portrait.</p>
+            </div>
+            <div class="ba-slider-container card p-0 mx-auto" style="max-width: 800px; display:block;">
+               <img src="https://images.unsplash.com/photo-1543857778-c4a1a3e0b2eb?w=800&q=80" alt="After Artwork"
+                  class="ba-img-after">
+               <div class="ba-img-before-wrapper" id="baWrapper" style="width: 50%;">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80" alt="Before Photo"
+                     class="ba-img-before" style="filter: grayscale(80%);">
+               </div>
+               <input type="range" class="ba-slider" id="baSlider" min="0" max="100" value="50"
+                  oninput="updateBeforeAfter()">
+            </div>
+         </div>
+      </section>
+
+      <!-- ==========================================
+         VIEW: CUSTOMER HUB (DISCOVERY & COMMUNITY)
+         ========================================== -->
+      <section id="view-customer-hub" class="page-module">
+         <div class="content-section">
+            <div class="flex-between align-end mb-5">
+               <div>
+                  <h1 class="m-0" id="hubWelcomeText">Welcome back, Collector.</h1>
+                  <p class="text-muted text-lg">Discover artists and get inspired by the community.</p>
+               </div>
+               <button class="btn-primary large glossy" onclick="navigateTo('view-commission')">+ New Custom
+                  Request</button>
+            </div>
+
+            <div class="filter-bar mb-4 pb-2 border-bottom flex-gap justify-center" style="gap:2rem;">
+               <button class="btn-filter active border-0" style="font-size:1.1rem; border:none!important;"
+                  id="ctab-artworks" onclick="switchCustomerTab('artworks')">Artworks</button>
+               <button class="btn-filter border-0" style="font-size:1.1rem; border:none!important;" id="ctab-artists"
+                  onclick="switchCustomerTab('artists')">Explore Artists</button>
+               <button class="btn-filter border-0" style="font-size:1.1rem; border:none!important;" id="ctab-community"
+                  onclick="switchCustomerTab('community')">Community Feed</button>
+            </div>
+
+            <div id="customerTab-artworks" class="customer-tab-pane active fade-in">
+               <div class="section-header flex-between mb-4">
+                  <div>
+                     <h2>Curated Artworks</h2>
+                     <p>Filter by style, rating, and price.</p>
+                  </div>
+                  <div class="search-bar"><input type="text" class="form-input" placeholder="Search artworks..."
+                        oninput="searchGalleryHub(this.value)" style="width:250px;"></div>
+               </div>
+               <div class="filter-bar">
+                  <button class="btn-filter active" onclick="filterGalleryHub('all', this)">All</button>
+                  <button class="btn-filter" onclick="filterGalleryHub('Digital', this)">Digital</button>
+                  <button class="btn-filter" onclick="filterGalleryHub('Sketch', this)">Sketch</button>
+                  <button class="btn-filter" onclick="filterGalleryHub('Cartoon', this)">Cartoon</button>
+                  <button class="btn-filter" onclick="filterGalleryHub('Realistic', this)">Realistic</button>
+               </div>
+               <div class="grid cols-3" id="hubGalleryContainer"></div>
+            </div>
+
+            <div id="customerTab-artists" class="customer-tab-pane fade-in" style="display:none;">
+               <h3 class="mb-3 flex align-center flex-gap"><span class="badge badge-trending"
+                     style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;">Trending 🔥</span> Top
+                  Rated Artists</h3>
+               <div class="flex-gap overflow-hidden scroll-x pb-4 mb-5" id="hubTrendingArtists"
+                  style="overflow-x:auto;"></div>
+
+               <h3 class="mb-3 mt-4">Artists You May Like</h3>
+               <p class="text-muted mb-4">Recommended based on platform trends.</p>
+               <div class="grid cols-3 gap-4" id="hubRecommendedArtists"></div>
+            </div>
+
+            <div id="customerTab-community" class="customer-tab-pane fade-in" style="display:none;">
+               <div class="max-w-800 mx-auto">
+                  <h2 class="mb-4 text-center">Inspiration Feed</h2>
+                  <div class="flex-column gap-4" id="hubCommunityFeed"></div>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- ==========================================
+         VIEW: ARTIST HOME (DASHBOARD)
+         ========================================== -->
+      <section id="view-artist-home" class="page-module">
+         <div class="content-section">
+            <div class="flex-between align-end mb-5">
+               <div>
+                  <h1 class="m-0" id="artistWelcome">Artist Portal</h1>
+                  <p class="text-muted">Manage your business and commissions.</p>
+               </div>
+               <button class="btn-primary large glossy" onclick="navigateTo('view-artist-upload')">+ Upload New
+                  Artwork</button>
+            </div>
+
+            <div class="grid cols-3 gap-4 mb-5">
+               <div class="card bg-alt border-l-accent box-shadow-xl p-5">
+                  <p class="text-muted font-bold m-0 text-lg">Total Orders</p>
+                  <h2 class="text-4xl text-accent m-0" id="artistStatTotal">12</h2>
+               </div>
+               <div class="card bg-alt box-shadow-xl p-5" style="border-left: 4px solid #f59e0b;">
+                  <p class="text-muted font-bold m-0 text-lg">Pending Requests</p>
+                  <h2 class="text-4xl m-0" style="color:#f59e0b;" id="artistStatPending">3</h2>
+               </div>
+               <div class="card bg-alt box-shadow-xl p-5" style="border-left: 4px solid #10b981;">
+                  <p class="text-muted font-bold m-0 text-lg">Total Earnings</p>
+                  <h2 class="text-4xl m-0" style="color:#10b981;" id="artistStatEarnings">₹45,200</h2>
+               </div>
+            </div>
+
+            <div class="card p-0 border-radius box-shadow-xl overflow-hidden mb-5">
+               <div class="bg-alt p-4 border-bottom flex-between">
+                  <h3 class="m-0">Recent Activity</h3><button class="btn-outline sm"
+                     onclick="navigateTo('view-artist-commissions')">View All</button>
+               </div>
+               <div class="p-4" id="artistRecentActivity">
+                  <p class="text-muted">No recent activity.</p>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- ==========================================
+         VIEW: ARTIST COMMISSIONS (MANAGEMENT)
+         ========================================== -->
+      <section id="view-artist-commissions" class="page-module">
+         <div class="content-section">
+            <div class="flex-between mb-4">
+               <h2 class="m-0">My Commissions</h2>
+            </div>
+            <!-- Incoming Requests -->
+            <h3 class="mt-5 mb-3">Incoming Requests (Pending)</h3>
+            <div class="grid cols-2 gap-4" id="artistPendingList"></div>
+
+            <!-- Active/In Progress -->
+            <h3 class="mt-5 mb-3">Active Commissions (In Progress)</h3>
+            <div class="grid cols-2 gap-4" id="artistActiveList"></div>
+         </div>
+      </section>
+
+      <!-- ==========================================
+         VIEW: ARTIST UPLOAD
+         ========================================== -->
+      <section id="view-artist-upload" class="page-module">
+         <div class="content-section max-w-800 mx-auto">
+            <div class="card box-shadow-xl border-accent-top">
+               <h2 class="mb-4">Upload New Artwork</h2>
+               <div class="form-group">
+                  <label>Artwork Title</label>
+                  <input type="text" id="upArtTitle" class="form-input" placeholder="e.g. Neon Dreams">
+               </div>
+               <div class="grid cols-2 gap-4 mb-3">
+                  <div class="form-group">
+                     <label>Style Category</label>
+                     <select id="upArtStyle" class="form-input">
+                        <option value="Digital">Digital</option>
+                        <option value="Sketch">Sketch</option>
+                        <option value="Cartoon">Cartoon</option>
+                        <option value="Realistic">Realistic</option>
+                     </select>
+                  </div>
+                  <div class="form-group">
+                     <label>Price (₹)</label>
+                     <input type="number" id="upArtPrice" class="form-input" placeholder="800" min="100">
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label>Description</label>
+                  <textarea id="upArtDesc" class="form-input" rows="3" placeholder="Describe the artwork..."></textarea>
+               </div>
+               <div class="form-group">
+                  <label>Upload High-Res Image</label>
+                  <div class="file-drop" onclick="document.getElementById('upArtFile').click()">
+                     <div class="text-4xl mb-2">📸</div>
+                     <p id="upArtFileLabel">Click or drag image here</p>
+                     <input type="file" id="upArtFile" accept="image/*" style="display:none"
+                        onchange="handleNewArtFile(this)">
+                  </div>
+               </div>
+               <button class="btn-primary full large glossy mt-4" onclick="submitArtistArtwork()">Publish to
+                  Gallery</button>
+            </div>
+         </div>
+      </section>
+
+      <!-- ==========================================
+         VIEW: ARTIST EARNINGS
+         ========================================== -->
+      <section id="view-artist-earnings" class="page-module">
+         <div class="content-section">
+            <div class="flex-between align-center mb-5">
+               <h2 class="m-0">Financial Overview</h2>
+               <button class="btn-outline">Download Report</button>
+            </div>
+
+            <div class="card p-5 bg-alt mb-5 text-center border-radius box-shadow-xl"
+               style="background:var(--accent); color:white;">
+               <p class="text-lg opacity-80 m-0">Total Lifetime Earnings</p>
+               <h1 class="text-white" style="font-size: 4rem;">₹45,200</h1>
+               <p class="opacity-80 m-0 mt-2">from 42 Completed Orders</p>
+            </div>
+
+            <!-- Static Chart UI Simulation -->
+            <div class="card box-shadow-xl border-accent-top">
+               <h3 class="mb-4">Revenue History (Last 6 Months)</h3>
+               <div class="chart-container"
+                  style="display:flex; align-items:flex-end; height:300px; gap:20px; padding:20px; border-bottom:2px solid var(--border); border-left:2px solid var(--border);">
+                  <div
+                     style="flex:1; background:var(--bg-alt); height:10%; position:relative; border-radius:4px 4px 0 0;"
+                     title="Oct: ₹2000"><span
+                        style="position:absolute; bottom:-30px; left:50%; transform:translateX(-50%); color:var(--text-muted); font-size:0.8rem;">Oct</span>
+                  </div>
+                  <div
+                     style="flex:1; background:var(--bg-alt); height:30%; position:relative; border-radius:4px 4px 0 0;"
+                     title="Nov: ₹5000"><span
+                        style="position:absolute; bottom:-30px; left:50%; transform:translateX(-50%); color:var(--text-muted); font-size:0.8rem;">Nov</span>
+                  </div>
+                  <div
+                     style="flex:1; background:var(--bg-alt); height:60%; position:relative; border-radius:4px 4px 0 0;"
+                     title="Dec: ₹12000"><span
+                        style="position:absolute; bottom:-30px; left:50%; transform:translateX(-50%); color:var(--text-muted); font-size:0.8rem;">Dec</span>
+                  </div>
+                  <div
+                     style="flex:1; background:var(--bg-alt); height:40%; position:relative; border-radius:4px 4px 0 0;"
+                     title="Jan: ₹8000"><span
+                        style="position:absolute; bottom:-30px; left:50%; transform:translateX(-50%); color:var(--text-muted); font-size:0.8rem;">Jan</span>
+                  </div>
+                  <div
+                     style="flex:1; background:var(--accent); height:90%; position:relative; border-radius:4px 4px 0 0; box-shadow:0 0 10px rgba(108,99,255,0.4);"
+                     title="Feb: ₹18200"><span
+                        style="position:absolute; bottom:-30px; left:50%; transform:translateX(-50%); color:var(--text-muted); font-size:0.8rem; font-weight:bold;">Feb</span>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- ==========================================
+         VIEW: CHECKOUT (PAYMENT FLOW)
+         ========================================== -->
+      <section id="view-checkout" class="page-module">
+         <div class="content-section max-w-800 mx-auto">
+            <button class="btn-secondary mb-4" onclick="checkoutBack()">← Cancel</button>
+            <div class="card box-shadow-xl p-0 overflow-hidden border-accent-top">
+               <div class="bg-alt p-4 border-bottom">
+                  <h2 class="m-0 text-3xl">Secure Checkout</h2>
+               </div>
+               <div class="p-5">
+                  <!-- Step 1: Summary -->
+                  <h3 class="mb-3">1. Order Summary</h3>
+                  <div class="flex-gap align-center p-3 mb-4 rounded bg-alt" style="border-radius:12px;">
+                     <img id="chkImg" src="" class="full-radius-img" style="width:80px; height:80px; display:none;">
+                     <div id="chkInitials"
+                        style="width:80px; height:80px; background:var(--accent); color:white; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:2rem; font-weight:bold; display:none;">
+                     </div>
+                     <div style="flex:1;">
+                        <h4 id="chkTitle" class="m-0 mb-1">Title</h4>
+                        <p class="text-sm text-muted m-0" id="chkType">Type</p>
+                     </div>
+                     <div class="text-right">
+                        <p class="text-sm text-muted m-0">Amount Due</p>
+                        <h3 class="text-2xl text-accent m-0" id="chkPrice">₹0</h3>
+                     </div>
+                  </div>
+
+                  <!-- Step 2: Delivery Address -->
+                  <h3 class="mb-3">2. Delivery Address</h3>
+                  <div class="form-group">
+                     <select id="chkAddress" class="form-input">
+                        <!-- Populated via JS -->
+                        <option value="">Select an address</option>
+                     </select>
+                     <p class="text-sm text-accent mt-2 cursor-pointer"
+                        onclick="navigateTo('view-user-profile'); switchProfileTab('addresses');">+ Add New in Profile
+                     </p>
+                  </div>
+
+                  <!-- Step 3: Payment Method -->
+                  <h3 class="mb-3 mt-5">3. Payment Method</h3>
+                  <div class="grid cols-3 gap-3 mb-4">
+                     <div class="card p-3 text-center card-hover border-radius pay-method active" id="payMethodCard"
+                        onclick="selectPayMethod('card')">
+                        <div class="text-3xl mb-1">💳</div><strong>Credit/Debit Card</strong>
+                     </div>
+                     <div class="card p-3 text-center card-hover border-radius pay-method" id="payMethodUpi"
+                        onclick="selectPayMethod('upi')">
+                        <div class="text-3xl mb-1">📱</div><strong>UPI</strong>
+                     </div>
+                     <div class="card p-3 text-center card-hover border-radius pay-method" id="payMethodNb"
+                        onclick="selectPayMethod('nb')">
+                        <div class="text-3xl mb-1">🏦</div><strong>Net Banking</strong>
+                     </div>
+                  </div>
+
+                  <!-- Step 4: Payment Details (Dynamic) -->
+                  <div id="payFormCard" class="card bg-alt pt-4 fade-in">
+                     <div class="form-group"><label>Card Number</label><input type="text" id="chkCardNum" class="form-input"
+                           placeholder="0000 0000 0000 0000"></div>
+                     <div class="grid cols-2 gap-3">
+                        <div class="form-group"><label>Expiry</label><input type="text" id="chkCardExp" class="form-input"
+                              placeholder="MM/YY"></div>
+                        <div class="form-group"><label>CVV</label><input type="password" id="chkCardCvv" class="form-input"
+                              placeholder="123"></div>
+                     </div>
+                     <div class="form-group"><label>Cardholder Name</label><input type="text" id="chkCardName" class="form-input"
+                           placeholder="Alex Carter"></div>
+                  </div>
+
+                  <div id="payFormUpi" class="card bg-alt pt-4 fade-in" style="display:none;">
+                     <div class="form-group"><label>UPI ID (VPA)</label><input type="text" id="chkUpiId" class="form-input"
+                           placeholder="name@bank"></div>
+                  </div>
+
+                  <div id="payFormNb" class="card bg-alt pt-4 fade-in" style="display:none;">
+                     <div class="form-group"><label>Select Bank</label>
+                        <select class="form-input">
+                           <option>HDFC Bank</option>
+                           <option>ICICI Bank</option>
+                           <option>State Bank of India</option>
+                        </select>
+                     </div>
+                  </div>
+
+                  <button class="btn-primary large full mt-5 glossy flex-between align-center"
+                     onclick="confirmPaymentAndOrder()">
+                     <span class="font-bold">Pay Securely</span>
+                     <span class="font-bold text-xl" id="chkBtnPrice">₹0</span>
+                  </button>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- ==========================================
+         VIEW: PAYMENT SUCCESS
+         ========================================== -->
+      <section id="view-payment-success" class="page-module">
+         <div class="content-section flex align-center justify-center" style="min-height:70vh;">
+            <div class="card max-w-800 text-center box-shadow-xl border-accent-top p-5 success-bounce">
+               <div class="text-accent mb-3" style="font-size: 5rem;">✅</div>
+               <h1 class="mb-2 text-4xl">Payment Successful!</h1>
+               <p class="text-muted text-lg mb-4">Your order has been officially placed with <strong id="succArtist">the
+                     Artist</strong>.</p>
+
+               <div class="bg-alt p-4 border-radius mb-5 text-left mx-auto max-w-800"
+                  style="width:100%; max-width:400px;">
+                  <div class="flex-between mb-2"><span>Order Ref:</span><strong id="succOrdId">#ORD-0000</strong></div>
+                  <div class="flex-between mb-2"><span>Amount Paid:</span><strong class="text-accent"
+                        id="succAmt">₹0</strong></div>
+                  <div class="flex-between"><span>Est. Delivery:</span><strong>Next Week</strong></div>
+               </div>
+
+               <div class="flex-gap justify-center">
+                  <button class="btn-primary large glossy" onclick="navigateTo('view-dashboard')">Track Order</button>
+                  <button class="btn-secondary large" onclick="downloadInvoice()">Download Receipt</button>
+               </div>
+            </div>
+         </div>
+      </section>
+
+
+      <!-- Rest of the views (EXISTING UNCHANGED except id updates) -->
+      <!-- GALLERY -->
+      <section id="view-gallery" class="page-module">
+         <div class="content-section">
+            <div class="section-header flex-between mb-4">
+               <div>
+                  <h2>Existing Artwork Gallery</h2>
+                  <p>Purchase instantly available masterpieces.</p>
+               </div>
+               <div class="search-bar"><input type="text" class="form-input" placeholder="Search artworks..."
+                     oninput="searchGallery(this.value)" style="width:250px;"></div>
+            </div>
+            <div class="filter-bar"><button class="btn-filter active"
+                  onclick="filterGallery('all', this)">All</button><button class="btn-filter"
+                  onclick="filterGallery('Digital', this)">Digital</button><button class="btn-filter"
+                  onclick="filterGallery('Sketch', this)">Sketch</button><button class="btn-filter"
+                  onclick="filterGallery('Cartoon', this)">Cartoon</button><button class="btn-filter"
+                  onclick="filterGallery('Realistic', this)">Realistic</button></div>
+            <div class="grid cols-3" id="galleryContainer"></div>
+         </div>
+      </section>
+
+      <!-- ARTWORK DETAILS -->
+      <section id="view-artwork-details" class="page-module">
+         <div class="content-section"><button class="btn-secondary mb-4" onclick="navigateTo('view-gallery')">← Back to
+               Gallery</button>
+            <div class="product-layout grid cols-2 gap-4">
+               <div class="product-image-container relative"><img id="detailArtImg" src="" alt="Artwork"
+                     class="full-radius-img hover-scale-slight shadow-glow" onclick="openZoom(this.src, 'Expanded View')"><button
+                     class="zoom-icon-btn"
+                     onclick="openZoom(document.getElementById('detailArtImg').src, 'Expanded View')">🔍 Zoom</button></div>
+               <div class="product-info-container card high-contrast box-shadow-xl border-accent-top">
+                  <div class="badge badge-secondary mb-3" id="detailArtStyle">Style</div>
+                  <h2 id="detailArtTitle" class="mb-1 text-4xl font-display">Title</h2>
+                  <div class="stars text-secondary mb-3" style="font-size:1.2rem; font-weight:bold;">★ <span
+                        id="detailArtRating">4.8</span> <span class="text-sm text-muted">(Read Reviews below)</span></div>
+                  <div class="artist-mini-card flex-gap align-center mb-4 mt-3"
+                     onclick="openArtistDetailsFromArtwork()"><img id="detailArtArtistImg" src="" class="avatar-small border-accent-circle">
+                     <div>
+                        <h4 id="detailArtArtistName" class="artist-link text-xl">Artist Name</h4>
+                        <p class="text-sm font-bold m-0" style="color: var(--accent);">View Full Profile &amp; Portfolio →
+                        </p>
+                     </div>
+                  </div>
+                  
+                  <h3 class="mt-4 mb-2 text-xl font-display">About the Artwork</h3>
+                  <p class="text-lg text-muted mb-4" id="detailArtDesc"></p>
+                  
+                  <div class="grid cols-3 gap-3 mb-4 p-3 border-radius bg-alt">
+                     <div>
+                        <p class="text-sm text-muted m-0">✓ Suitable Use</p><strong class="text-sm"
+                           id="detailArtSuitable">Living Room, Gift</strong>
+                     </div>
+                     <div>
+                        <p class="text-sm text-muted m-0">⏱ Delivery</p><strong class="text-sm"
+                           id="detailArtDelivery">Instant Download</strong>
+                     </div>
+                     <div>
+                        <p class="text-sm text-muted m-0">📐 Dimensions</p><strong class="text-sm"
+                           id="detailArtDim">High-Res 4K</strong>
+                     </div>
+                  </div>
+                  <div class="price-box mb-4 p-4 bg-alt border-radius text-center">
+                     <p class="text-sm font-bold text-muted m-0 uppercase-track">Direct Purchase Price</p>
+                     <h3 class="highlight-price text-5xl m-0 mt-2" id="detailArtPrice" style="color:var(--accent);">₹800</h3>
+                  </div>
+                  <div class="flex-column gap-3 mt-4 mb-4"><button class="btn-primary large full glossy"
+                        onclick="goToDirectConfirmation()">Buy Now</button><button class="btn-outline full"
+                        onclick="commissionFromArtwork()">Request Custom Version from Artist</button></div>
+               </div>
+            </div>
+            
+            <!-- Additional Details & Reviews Section for Artwork -->
+            <div class="mt-5 card max-w-1000 mx-auto box-shadow-xl bg-alt-glass">
+                <div class="filter-bar mb-4 pb-2 border-bottom flex-gap justify-center" style="gap:2rem;">
+                   <button class="btn-filter active border-0" style="font-size:1.1rem; border:none!important;" id="aptab-desc" onclick="switchArtProductTab('desc')">Detailed Specs</button>
+                   <button class="btn-filter border-0" style="font-size:1.1rem; border:none!important;" id="aptab-reviews" onclick="switchArtProductTab('reviews')">Customer Reviews <span id="artRevCountBadge" class="badge"></span></button>
+                </div>
+                
+                <div id="artProductTab-desc" class="art-product-tab fade-in active p-4">
+                    <h3 class="mb-3 font-display">Artwork Specifications</h3>
+                    <ul class="text-lg line-height-15" style="padding-left:1.5rem; color:var(--text-secondary);">
+                        <li><strong>Medium:</strong> Digital Canvas / Mixed Media</li>
+                        <li><strong>Resolution:</strong> 300 DPI, Print-Ready (for Digital Items)</li>
+                        <li><strong>License:</strong> Personal Use Only (Commercial license available on request)</li>
+                        <li><strong>Authenticity:</strong> Includes a verified digital certificate by Artify.</li>
+                    </ul>
+                </div>
+                
+                <div id="artProductTab-reviews" class="art-product-tab fade-in p-4" style="display:none;">
+                    <div class="flex-between align-center mb-4">
+                        <h3 class="font-display m-0">What Buyers Say</h3>
+                        <button class="btn-primary sm" onclick="openArtReviewModal()">+ Write a Review</button>
+                    </div>
+                    <div id="artProductReviewsList" class="flex-column gap-3">
+                        <p class="text-muted">Loading reviews...</p>
+                    </div>
+                </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- DIRECT CONFIRMATION -->
+      <section id="view-direct-confirmation" class="page-module">
+         <div class="content-section max-w-800 mx-auto"><button class="btn-secondary mb-4"
+               onclick="navigateTo('view-artwork-details')">← Back to Details</button>
+            <div class="card box-shadow-xl text-center p-5 border-accent-top">
+               <h2 class="text-4xl mb-2">Order Review</h2>
+               <p class="text-muted mb-4">You are purchasing a pre-made artwork directly.</p>
+               <div class="flex justify-center mb-4"><img id="confDirectImg" src="" class="full-radius-img"
+                     style="width:200px; height:200px; object-fit:cover; border:3px solid var(--accent);"></div>
+               <h3 id="confDirectTitle" class="mb-1 text-2xl">Title</h3>
+               <p class="text-muted mb-4 artist-link font-bold" id="confDirectArtist"
+                  onclick="openArtistDetails(this.textContent)">Artist</p>
+               <div class="form-group text-left mx-auto mb-4" style="max-width:300px;"><label>Quantity</label><select
+                     id="confDirectQty" class="form-input" onchange="updateDirectTotal()">
+                     <option value="1">1</option>
+                     <option value="2">2</option>
+                     <option value="3">3</option>
+                  </select></div>
+               <div class="flex-between align-center mb-5 p-4 mx-auto"
+                  style="max-width:300px; border: 2px solid var(--accent); border-radius: 12px;"><span
+                     class="text-xl font-bold">Total</span><span class="text-4xl font-bold" style="color:var(--accent);"
+                     id="confDirectTotal">₹800</span></div><button class="btn-primary large full glossy"
+                  onclick="processDirectOrderCheckout()">Proceed to Checkout</button>
+            </div>
+         </div>
+      </section>
+
+      <!-- COMMISSION WIZARD -->
+      <section id="view-commission" class="page-module">
+         <div class="content-section layout-sidebar">
+            <div class="form-panel card box-shadow-xl border-accent-top">
+               <h2 class="mb-2">Custom Portrait Request</h2>
+               <p class="text-muted mb-4">Select your preferences for a custom portrait.</p>
+               <div class="form-group"><label>Number of People/Subjects</label><select id="reqSubjects"
+                     class="form-input" onchange="updatePreview()">
+                     <option value="1">1 Person</option>
+                     <option value="2">2 People</option>
+                     <option value="3">3 People</option>
+                     <option value="4">Family (4+)</option>
+                  </select></div>
+               <div class="form-group"><label>Portrait Style</label><select id="reqStyle" class="form-input"
+                     onchange="updatePreview()">
+                     <option value="Digital">Digital Art</option>
+                     <option value="Sketch">Pencil Sketch</option>
+                     <option value="Cartoon">Cartoon/Caricature</option>
+                     <option value="Realistic">Realistic Oil</option>
+                  </select></div>
+               <div class="form-group"><label>Background Color/Theme</label><select id="reqBg" class="form-input"
+                     onchange="updatePreview()">
+                     <option value="Plain White">Plain White</option>
+                     <option value="Dark Aesthetic">Dark Aesthetic</option>
+                     <option value="Vibrant Gradient">Vibrant Gradient</option>
+                     <option value="Detailed Scene">Detailed Scene</option>
+                  </select></div>
+               <div class="form-group"><label>Upload Reference Photo</label>
+                  <div class="file-drop" onclick="document.getElementById('reqFile').click()">
+                     <div class="text-4xl mb-2">📸</div>
+                     <p id="fileLabel">Click or drag drop image here</p><input type="file" id="reqFile"
+                        style="display:none" onchange="handleFileDrop(this)">
+                  </div>
+               </div>
+               <div class="form-group"><label>Special Notes for Artist</label><textarea id="reqNotes" class="form-input"
+                     placeholder="Eye color, lighting, specific vibe..." oninput="updatePreview()"></textarea></div>
+               <button class="btn-primary full large mt-2 glossy" onclick="goToCommissionConfirmation()">Review
+                  Request</button>
+            </div>
+            <aside class="sidebar-panel">
+               <div class="card mb-4 stick-top bg-gradient text-white" style="background:var(--accent);">
+                  <h3 class="mb-3 text-white">Live Preview Panel</h3>
+                  <div class="preview-line"><span class="text-white opacity-80">Subjects:</span> <strong id="pvSubj"
+                        class="text-white">1 Person</strong></div>
+                  <div class="preview-line"><span class="text-white opacity-80">Style:</span> <strong id="pvStyle"
+                        class="text-white">Digital Art</strong></div>
+                  <div class="preview-line"><span class="text-white opacity-80">Background:</span> <strong id="pvBg"
+                        class="text-white">Plain White</strong></div>
+                  <div class="preview-line"><span class="text-white opacity-80">Notes:</span> <strong id="pvNotes"
+                        class="text-white truncate">—</strong></div>
+                  <hr class="my-3 opacity-50 border-white">
+                  <div class="preview-total"><span class="text-white font-bold">Total Estimate:</span><strong
+                        id="pvPrice" class="text-4xl text-white">₹800</strong></div>
+               </div>
+            </aside>
+         </div>
+      </section>
+
+      <!-- COMMISSION CONFIRMATION -->
+      <section id="view-commission-confirmation" class="page-module">
+         <div class="content-section max-w-800 mx-auto"><button class="btn-secondary mb-4"
+               onclick="navigateTo('view-commission')">← Back to Edit</button>
+            <div class="card box-shadow-xl text-center p-5 border-accent-top">
+               <h2 class="text-4xl mb-2">Commission Summary</h2>
+               <p class="text-muted mb-4">Review your selections for the custom portrait request before checkout.</p>
+               <div class="flex justify-center mb-4 flex-gap">
+                  <div id="confCustRefWrapper" style="display:none;">
+                     <p class="text-sm text-muted mb-1">Reference</p>
+                     <div
+                        style="width:100px; height:100px; background:var(--bg-alt); display:flex; align-items:center; justify-content:center; border-radius:12px; font-size:2rem;">
+                        🏞️</div>
+                  </div>
+                  <div>
+                     <p class="text-sm text-muted mb-1">Target Style</p>
+                     <div id="confCustThumb"
+                        style="width:100px; height:100px; background:var(--accent); display:flex; align-items:center; justify-content:center; border-radius:12px; color:white; font-size:2rem; font-weight:bold;">
+                        S</div>
+                  </div>
+               </div>
+               <div class="grid cols-2 text-left bg-alt p-4 border-radius mb-4">
+                  <div>
+                     <p class="text-sm text-muted m-0">Style Selected</p>
+                     <h4 id="confCustStyle" class="m-0">Digital</h4>
+                  </div>
+                  <div>
+                     <p class="text-sm text-muted m-0">Subjects</p>
+                     <h4 id="confCustSubj" class="m-0">1 Person</h4>
+                  </div>
+                  <div>
+                     <p class="text-sm text-muted m-0">Background</p>
+                     <h4 id="confCustBg" class="m-0">White</h4>
+                  </div>
+                  <div>
+                     <p class="text-sm text-muted m-0">Notes</p>
+                     <h4 id="confCustNotes" class="truncate m-0">—</h4>
+                  </div>
+               </div>
+               <div class="flex-between align-center mb-5 p-4"
+                  style="border: 2px solid var(--accent); border-radius: 12px;"><span class="text-xl font-bold">Total
+                     Amount Due</span><span class="text-4xl font-bold" style="color:var(--accent);"
+                     id="confCustPrice">₹800</span></div><button class="btn-primary large full glossy"
+                  onclick="processCustomOrderCheckout()">Proceed to Checkout</button>
+            </div>
+         </div>
+      </section>
+
+      <!-- CUSTOMER DASHBOARD (My Orders) -->
+      <section id="view-dashboard" class="page-module">
+         <div class="content-section">
+            <div class="dashboard-controls flex-between mb-5">
+               <div>
+                  <h2 class="m-0 font-display">My Active Orders</h2>
+                  <p class="text-muted m-0">Track all your requests and direct purchases.</p>
+               </div>
+            </div>
+            <div id="dashBuyer">
+               <div class="flex-between mb-4">
+                  <h3 class="mb-0 font-display">List View</h3>
+                  <div class="filter-tabs flex-gap"><button class="btn-filter active border-0"
+                        onclick="filterOrders('All', this)">All</button><button class="btn-filter border-0"
+                        onclick="filterOrders('Direct', this)">Direct</button><button class="btn-filter border-0"
+                        onclick="filterOrders('Custom', this)">Custom</button><button class="btn-filter border-0"
+                        onclick="filterOrders('Completed', this)">Completed</button></div>
+               </div>
+               <div class="flex-column gap-3" id="ordersListContainer"></div>
+            </div>
+         </div>
+      </section>
+
+      <!-- ORDER DETAILS (Customer/Artist Shared specific views) -->
+      <section id="view-order-details" class="page-module">
+         <div class="content-section max-w-1000 mx-auto"><button class="btn-secondary mb-4"
+               onclick="if(currentUser && currentUser.role==='artist') navigateTo('view-artist-home'); else navigateTo('view-dashboard');">← Back to Dashboard</button>
+            
+            <div id="orderLayoutGrid" class="grid bg-secondary p-0 overflow-hidden box-shadow-xl border-accent-top" style="border:1px solid var(--border);">
+               <!-- Left Side: Order Details -->
+               <div class="p-0 border-right" id="orderInfoSide">
+                  <div class="p-4 bg-alt flex-between align-center border-bottom border-subtle">
+                     <div>
+                        <h2 id="odID" class="m-0 text-3xl font-display">Order #---</h2>
+                        <p class="text-muted text-sm mt-1 mb-0" id="odDate">Date: ---</p>
+                     </div>
+                     <div class="text-right">
+                        <div class="badge mb-1 text-sm" id="odStatusBadge" style="background:var(--secondary)">Status</div>
+                        <h4 id="odType" class="text-accent m-0 font-display">Type</h4>
+                     </div>
+                  </div>
+                  <div class="p-4">
+                     <div class="flex-gap mb-4 align-start"><img id="odImg" src="" class="full-radius-img"
+                           style="width:120px; height:120px; object-fit:cover; border: 2px solid var(--border);">
+                        <div>
+                           <h3 id="odTitle" class="mb-1 font-display">Title / Style</h3>
+                           <p class="text-muted artist-link m-0" id="odArtist"
+                              onclick="if(this.dataset.artist) openArtistDetails(this.dataset.artist)">Artist / Details</p>
+                        </div>
+                     </div>
+                     <div id="odCustomDetails" class="bg-alt p-4 border-radius mb-4">
+                        <h4 class="mb-3 font-display">Customization Preferences</h4>
+                        <div class="grid cols-2 gap-3">
+                           <div><span class="text-muted text-sm block uppercase-track">Subjects:</span><strong id="odCustomSubj"></strong>
+                           </div>
+                           <div><span class="text-muted text-sm block uppercase-track">Background:</span><strong id="odCustomBg"></strong>
+                           </div>
+                           <div style="grid-column: span 2;"><span class="text-muted text-sm block uppercase-track">Notes:</span><span
+                                 id="odCustomNotes"></span></div>
+                        </div>
+                     </div>
+                     <h4 class="mb-3 font-display">Progress Tracker</h4>
+                     <div class="progress-bar-container mb-3">
+                        <div class="progress-bar-fill" id="odProgressFill" style="width: 25%;"></div>
+                     </div>
+                     <div class="timeline" id="odTimeline"></div>
+                  </div>
+                  <div class="p-4 bg-alt border-top border-subtle flex-gap">
+                     <button class="btn-primary flex-1" id="btnOdReview" style="display:none;" onclick="openOrderReviewModal()">★ View / Leave Review</button>
+                     <button class="btn-outline flex-1" onclick="downloadInvoice()">Download Invoice</button>
+                  </div>
+               </div>
+
+               <!-- Right Side: Embedded Custom Portrait Chat -->
+               <div id="orderChatPanel" class="flex-column" style="display:none; background: var(--bg-alt); border-left: 1px solid var(--border);">
+                   <div class="p-4 border-bottom bg-secondary flex-between">
+                       <div>
+                          <h4 class="m-0 font-display">Project Discussion</h4>
+                          <p class="text-xs text-muted m-0 uppercase-track">Direct line to artist</p>
+                       </div>
+                   </div>
+                   <div id="orderChatBody" class="p-4 flex-1 overflow-y-auto" style="height: 500px; display:flex; flex-direction:column; gap:15px; background:var(--bg-primary);">
+                       <!-- Chat bubbles injected via JS -->
+                   </div>
+                   <div class="p-3 border-top bg-secondary flex-gap align-center">
+                       <input type="text" id="orderChatInput" class="form-input" placeholder="Type a message..." onkeypress="if(event.key==='Enter') sendOrderMessage()">
+                       <button class="btn-primary" onclick="sendOrderMessage()">Send</button>
+                   </div>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- REDDIT-STYLE FORUM COMMUNITY -->
+      <section id="view-forum" class="page-module">
+          <div class="content-section max-w-1000 mx-auto">
+              <div class="flex-between mb-4 align-end">
+                  <div>
+                      <h1 class="font-display m-0">Artify Community</h1>
+                      <p class="text-muted text-lg mt-2">Discuss techniques, share in-progress work, and seek inspiration.</p>
+                  </div>
+                  <button class="btn-primary large glossy" onclick="openForumModal()">+ Create Post</button>
+              </div>
+              
+              <div class="filter-bar mb-4 pb-2 border-bottom flex-gap">
+                  <button class="btn-filter active border-0" id="forumBtn-hot" onclick="renderForum('hot', this)">🔥 Hot</button>
+                  <button class="btn-filter border-0" id="forumBtn-new" onclick="renderForum('new', this)">✨ New</button>
+                  <button class="btn-filter border-0" id="forumBtn-critique" onclick="renderForum('critique', this)">👁️ Critique Requests</button>
+              </div>
+
+              <div id="forumContainer" class="flex-column gap-4">
+                  <!-- Injected via JS -->
+              </div>
+          </div>
+      </section>
+
+      <!-- USER PROFILE -->
+      <section id="view-user-profile" class="page-module">
+         <div class="content-section sidebar-layout">
+            <div class="card p-0 h-100 stick-top" style="height: max-content;">
+               <div class="p-4 text-center border-bottom"><img
+                     src="https://ui-avatars.com/api/?name=User&background=E5C158&color=141414" id="sidebarAvatar"
+                     class="avatar-large mb-3 mx-auto box-shadow-xl" style="border:3px solid var(--accent)">
+                  <h3 class="mb-1" id="sidebarName">Guest User</h3>
+                  <p class="text-sm text-muted mb-3" id="sidebarRoleBadge"><span class="badge"
+                        style="background:var(--bg-alt); color:var(--text-primary);">Role Display</span></p>
+               </div>
+               <div class="profile-sidebar-nav"><button class="nav-tab active" id="ptab-info"
+                     onclick="switchProfileTab('info')">Profile Info</button><button class="nav-tab" id="ptab-addresses"
+                     onclick="switchProfileTab('addresses')">Saved Addresses</button><button class="nav-tab"
+                     id="ptab-payments" onclick="switchProfileTab('payments')">Payment Methods</button><button
+                     class="nav-tab" id="ptab-settings" onclick="switchProfileTab('settings')">Settings</button></div>
+            </div>
+            <div class="profile-content">
+               <div id="pane-info" class="tab-pane active fade-in">
+                  <h2 class="mb-4">Profile Information</h2>
+                  <div class="card box-shadow-sm mb-4 border-accent-top">
+                     <div class="form-group"><label>Full Name</label><input type="text" id="profNameInput"
+                           class="form-input max-w-800" value="Guest User"></div>
+                     <div class="form-group mb-0"><label>Email Address</label><input type="email" id="profEmailInput"
+                           class="form-input max-w-800" value="guest@artify.com" disabled
+                           title="Email cannot be changed directly"></div><button class="btn-primary mt-4 glossy"
+                        onclick="saveProfileInfo()">Save Changes</button>
+                  </div>
+               </div>
+               <div id="pane-addresses" class="tab-pane fade-in">
+                  <div class="flex-between mb-4">
+                     <h2>Saved Addresses</h2><button class="btn-outline"
+                        onclick="document.getElementById('addAddressForm').style.display='block';">+ Add New
+                        Address</button>
+                  </div>
+                  <div id="addAddressForm" class="card bg-alt mb-4 border-l-accent fade-in" style="display:none;">
+                     <h4 class="mb-3">New Delivery Address</h4>
+                     <div class="grid cols-2 gap-3 mb-3"><input type="text" id="addrName" class="form-input"
+                           placeholder="Recipient Name"><input type="text" id="addrPhone" class="form-input"
+                           placeholder="Phone Number"></div>
+                     <div class="form-group"><input type="text" id="addrFull" class="form-input"
+                           placeholder="Full Address"></div>
+                     <div class="grid cols-2 gap-3 mb-3"><input type="text" id="addrCity" class="form-input"
+                           placeholder="City"><input type="text" id="addrPin" class="form-input" placeholder="Pincode">
+                     </div><button class="btn-primary glossy" onclick="saveNewAddress()">Save Address</button>
+                  </div>
+                  <div id="addressesList" class="grid cols-2 gap-3">
+                     <p class="text-muted col-span-2">No addresses saved yet.</p>
+                  </div>
+               </div>
+               <div id="pane-payments" class="tab-pane fade-in">
+                  <h2 class="mb-4">Payment Methods</h2>
+                  <div class="grid cols-2 gap-3 mb-4">
+                     <div class="card flex align-center flex-gap border-l-accent">
+                        <div class="text-4xl">💳</div>
+                        <div>
+                           <h4>Credit Card</h4>
+                           <p class="text-sm text-muted">**** **** **** 4242</p>
+                        </div>
+                     </div>
+                     <div class="card flex align-center flex-gap" style="border-left:4px solid #10b981;">
+                        <div class="text-4xl">📱</div>
+                        <div>
+                           <h4>UPI Linked</h4>
+                           <p class="text-sm text-muted">user@okhdfcbank</p>
+                        </div>
+                     </div>
+                  </div><button class="btn-outline">+ Add New Payment Method</button>
+               </div>
+               <div id="pane-settings" class="tab-pane fade-in">
+                  <h2 class="mb-4">Account Settings</h2>
+                  <div class="card mb-4">
+                     <div class="flex-between align-center mb-4 pb-4 border-bottom">
+                        <div>
+                           <h4>Dark Mode</h4>
+                           <p class="text-sm text-muted m-0">Toggle the platform's visual theme</p>
+                        </div><label class="switch"><input type="checkbox" id="settingsThemeToggle"
+                              onchange="toggleTheme()"><span class="slider"></span></label>
+                     </div>
+                     <div class="flex-between align-center mb-4 pb-4 border-bottom">
+                        <div>
+                           <h4>Notifications</h4>
+                           <p class="text-sm text-muted m-0">Receive email alerts</p>
+                        </div><label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                     </div><button class="btn-secondary mt-2 text-danger font-bold" onclick="handleLogout()">Sign Out
+                        Everywhere</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </section>
+
+      <!-- ARTIST DETAILS -->
+      <section id="view-artist-details" class="page-module">
+         <div class="content-section"><button class="btn-secondary mb-4" onclick="navigateTo('view-gallery')">←
+               Back</button>
+            <div class="artist-cover card mb-3 p-0 overflow-hidden box-shadow-xl" style="border: 1px solid var(--border);">
+               <div class="cover-photo"
+                  style="height: 350px; background: linear-gradient(to bottom, transparent, var(--bg-secondary)), url('https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=1600&q=80') center/cover;"></div>
+               <div class="p-5 flex-between align-end relative"
+                  style="margin-top: -120px; background:transparent;">
+                  <div class="flex-gap align-end"><img id="detailArtistImg" src="" class="avatar-huge box-shadow-xl"
+                        style="background:var(--bg-secondary); border: 4px solid var(--accent); padding: 5px;">
+                     <div class="mb-2">
+                        <h1 id="detailArtistName" style="font-size: 3.5rem; line-height:1; margin-bottom:0.2rem; text-shadow: 0 4px 20px rgba(0,0,0,0.3);">Name
+                        </h1>
+                        <p class="text-xl font-bold m-0 uppercase-track" style="color:var(--accent);" id="detailArtistStyle">
+                           Specialty</p>
+                        <div class="stars mt-1 text-secondary" style="font-size: 1.2rem; color:var(--accent);">★★★★★ <span
+                              class="text-muted text-sm font-medium"
+                              id="detailArtistRatingCount">(4.9 • 100 Reviews)</span></div>
+                     </div>
+                  </div>
+                  <div class="flex-gap align-end">
+                     <div class="text-right mr-4 p-3" style="background:var(--bg-secondary); border: 1px solid var(--border);">
+                        <h3 class="m-0 font-display" id="detailArtistExp" style="font-size: 2rem; color:var(--accent);">5 Years</h3>
+                        <p class="text-sm text-muted m-0 uppercase-track">Experience</p>
+                     </div>
+                     <div class="text-right mr-4 p-3" style="background:var(--bg-secondary); border: 1px solid var(--border);">
+                        <h3 class="m-0 font-display" id="detailArtistTotalArt" style="font-size: 2rem; color:var(--accent);">120</h3>
+                        <p class="text-sm text-muted m-0 uppercase-track">Artworks</p>
+                     </div>
+                     <div class="flex-column gap-3">
+                        <button class="btn-outline w-100" id="btnFollowArtist"
+                           onclick="toggleFollowArtist()">+ Follow</button>
+                        <button class="btn-primary glossy w-100"
+                           onclick="commissionFromArtist()">Request Custom Work</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="filter-bar mb-4 pb-2 border-bottom flex-gap justify-center" style="gap:2rem;"><button
+                  class="btn-filter active border-0" style="font-size:1.1rem; border:none!important;"
+                  id="atab-portfolio" onclick="switchArtistTab('portfolio')">Portfolio</button><button
+                  class="btn-filter border-0" style="font-size:1.1rem; border:none!important;" id="atab-about"
+                  onclick="switchArtistTab('about')">About</button><button class="btn-filter border-0"
+                  style="font-size:1.1rem; border:none!important;" id="atab-pricing"
+                  onclick="switchArtistTab('pricing')">Pricing & Styles</button><button class="btn-filter border-0"
+                  style="font-size:1.1rem; border:none!important;" id="atab-reviews"
+                  onclick="switchArtistTab('reviews')">Reviews</button><button class="btn-filter border-0"
+                  style="font-size:1.1rem; border:none!important;" id="atab-commission"
+                  onclick="switchArtistTab('commission')">Commission Info</button></div>
+            <div id="artistTab-portfolio" class="artist-tab-pane active fade-in">
+               <div class="grid cols-3" id="detailArtistPortfolio"></div>
+            </div>
+            <div id="artistTab-about" class="artist-tab-pane fade-in" style="display:none;">
+               <div class="card max-w-800 mx-auto bg-alt mb-4">
+                  <h3 class="mb-3">About the Artist</h3>
+                  <p class="text-lg line-height-15 mb-4" id="detailArtistBio"></p>
+               </div>
+               <div class="card max-w-800 mx-auto bg-alt mb-4">
+                  <h3 class="mb-3">Specializations & Skills</h3>
+                  <div class="flex-gap flex-wrap" id="detailArtistSpecs"><span class="badge badge-secondary p-2">Digital
+                        Art</span></div>
+               </div>
+               <div class="card max-w-800 mx-auto bg-alt">
+                  <h3 class="mb-3">Achievements</h3>
+                  <ul class="text-lg line-height-15" style="padding-left:1.5rem;">
+                     <li>Featured in Virtual Art Expo 2025</li>
+                     <li>Over 500+ satisfied clients globally</li>
+                     <li>Top Rated Seller on Artify</li>
+                  </ul>
+               </div>
+            </div>
+            <div id="artistTab-pricing" class="artist-tab-pane fade-in" style="display:none;">
+               <div class="card max-w-800 mx-auto p-0 overflow-hidden">
+                  <table class="pricing-table">
+                     <tr style="background:var(--bg-alt);">
+                        <th>Style Details</th>
+                        <th>Base Price</th>
+                     </tr>
+                     <tr>
+                        <td><strong>Digital Avatar</strong></td>
+                        <td class="text-accent font-bold">₹500</td>
+                     </tr>
+                     <tr>
+                        <td><strong>Detailed Portrait</strong></td>
+                        <td class="text-accent font-bold">₹800</td>
+                     </tr>
+                     <tr>
+                        <td><strong>Hyper-Realistic Scene</strong></td>
+                        <td class="text-accent font-bold">₹1500+</td>
+                     </tr>
+                  </table>
+               </div>
+            </div>
+            <div id="artistTab-reviews" class="artist-tab-pane fade-in" style="display:none;">
+               <div class="flex-between mb-4 max-w-800 mx-auto">
+                  <h3 class="font-display">Customer Reviews</h3>
+                  <div class="filter-tabs flex-gap">
+                        <button class="btn-primary sm" onclick="openArtReviewModal()">+ Leave a Review</button>
+                        <button class="btn-filter sm active" onclick="filterReviews('all', this)">All</button>
+                        <button class="btn-filter sm" onclick="filterReviews('5', this)">5★</button>
+                        <button class="btn-filter sm" onclick="filterReviews('4', this)">4★</button>
+                        <button class="btn-filter sm" onclick="filterReviews('3', this)">3★</button>
+                  </div>
+               </div>
+               <div class="flex-column gap-3 max-w-800 mx-auto" id="artistReviewsContainer"></div>
+            </div>
+            <div id="artistTab-commission" class="artist-tab-pane fade-in" style="display:none;">
+               <div class="card bg-alt max-w-800 mx-auto">
+                  <h3 class="mb-3">How to Commission Me</h3>
+                  <ul class="text-lg line-height-15 mb-4" style="padding-left:1.5rem;">
+                     <li><strong>Step 1:</strong> Click "Request Custom" and fill out the wizard.</li>
+                     <li><strong>Step 2:</strong> Upload high-quality reference photos (good lighting, no blur).</li>
+                     <li><strong>Step 3:</strong> I will review and accept within 24 hours.</li>
+                  </ul>
+                  <h4 class="mb-2">Policies</h4>
+                  <p class="text-muted m-0">✓ 2 Free Revisions included.<br>✓ Typical delivery is 3-5 days.</p>
+               </div>
+            </div>
+         </div>
+
+         <!-- Similar Artists Section -->
+         <div class="content-section pt-0 mt-5 border-top" style="padding-top:4rem;" id="similarArtistsSection">
+            <h2 class="mb-4">Similar Artists to Explore</h2>
+            <div class="flex-gap overflow-hidden scroll-x pb-4" id="similarArtistsContainer" style="overflow-x:auto;">
+            </div>
+         </div>
+      </section>
+
+      <!-- WISHLIST -->
+      <section id="view-wishlist" class="page-module">
+         <div class="content-section">
+            <div class="section-header">
+               <h2>Your Wishlist</h2>
+               <p>Artworks you've saved for inspiration.</p>
+            </div>
+            <div class="grid cols-4" id="wishlistContainer"></div>
+            <div id="emptyWishlist" class="card text-center py-5">
+               <div class="text-5xl mb-3 opacity-50">📂</div>
+               <p class="text-xl">Your wishlist is empty.</p>
+            </div>
+         </div>
+      </section>
+
+   </main>
+
+   <!-- Auth Modal (Login / Register) -->
+   <div class="modal" id="loginModal">
+      <div class="modal-card">
+         <button class="close-btn" onclick="toggleLoginModal()">✕</button>
+         
+         <div class="filter-bar mb-4 pb-2 border-bottom flex-gap justify-center">
+            <button class="btn-filter active border-0" id="authTabLogin" onclick="switchAuthTab('login')">Log In</button>
+            <button class="btn-filter border-0" id="authTabRegister" onclick="switchAuthTab('register')">Create Account</button>
+         </div>
+
+         <div class="text-center mb-4">
+            <h2 class="font-display text-accent" id="authModalTitle">Welcome Back</h2>
+            <p class="text-muted" id="authModalDesc">Sign in to securely access your portal.</p>
+         </div>
+
+         <div id="authRegisterFields" style="display:none;">
+             <label class="font-bold mb-1 block">Your Full Name</label>
+             <input type="text" class="form-input mb-3" placeholder="Alex Carter" id="authName">
+             
+             <!-- Role Radio Toggles -->
+             <label class="font-bold mb-1 block">I want to...</label>
+             <div class="flex-gap mb-4 justify-center">
+                <label class="btn-filter flex-1 text-center font-bold role-radio active" style="padding:10px; cursor:pointer;" id="lblRoleCustomer" onclick="selectLoginRole('customer')">
+                   <input type="radio" name="roleSelect" value="customer" style="display:none;" checked> Buy Art
+                </label>
+                <label class="btn-filter flex-1 text-center font-bold role-radio" style="padding:10px; cursor:pointer;" id="lblRoleArtist" onclick="selectLoginRole('artist')">
+                   <input type="radio" name="roleSelect" value="artist" style="display:none;"> Sell Art
+                </label>
+             </div>
+         </div>
+
+         <label class="font-bold mb-1 block">Email</label>
+         <input type="email" class="form-input mb-3" placeholder="user@artify.com" id="authEmail">
+         
+         <label class="font-bold mb-1 block">Password</label>
+         <input type="password" class="form-input mb-4" placeholder="••••••••" id="authPassword">
+         
+         <button class="btn-primary full large glossy" id="authSubmitBtn" onclick="handleAuthSubmit()">Secure Log In</button>
+      </div>
+   </div>
+
+   <!-- Review Modal (Missing in generic template previously) -->
+   <div class="modal" id="reviewModal">
+       <div class="modal-card">
+           <button class="close-btn" onclick="document.getElementById('reviewModal').classList.remove('flex')">✕</button>
+           <h2 class="mb-2 font-display text-accent">Leave a Review</h2>
+           <p class="text-muted mb-4">Review your experience with <strong id="revModalArtist">Artist</strong>.</p>
+           
+           <div class="flex justify-center mb-4">
+               <div class="star-rating-input">
+                   <input type="radio" name="rating" id="star5" value="5" checked><label for="star5">★</label>
+                   <input type="radio" name="rating" id="star4" value="4"><label for="star4">★</label>
+                   <input type="radio" name="rating" id="star3" value="3"><label for="star3">★</label>
+                   <input type="radio" name="rating" id="star2" value="2"><label for="star2">★</label>
+                   <input type="radio" name="rating" id="star1" value="1"><label for="star1">★</label>
+               </div>
+           </div>
+           
+           <label class="font-bold mb-1 block">Your Thoughts</label>
+           <textarea id="revModalComment" class="form-input mb-4" rows="4" placeholder="How was the artwork? Was the style accurate?"></textarea>
+           
+           <button class="btn-primary full large glossy" onclick="submitReview()">Submit Review</button>
+       </div>
+   </div>
+
+   <!-- Full Screen Zoom Modal -->
+   <div class="modal justify-center align-center" id="zoomModal" onclick="closeZoom()">
+      <button class="close-btn zoom-close absolute" style="top: 20px; right: 20px;" onclick="closeZoom()">✕</button>
+      <img id="zoomImage" src="" class="lightbox-img" style="max-height: 90vh; max-width: 90vw; border-radius: 12px; box-shadow: 0 0 40px rgba(0,0,0,0.5);">
+   </div>
+
+   <div class="modal" id="invoiceModal">
+      <div class="modal-card">
+         <div class="text-center mb-4 border-bottom pb-3">
+            <h2 class="text-3xl mb-1">Invoice Receipt</h2>
+            <p class="text-muted m-0">#INV-993821</p>
+         </div>
+         <div class="flex-between mb-2"><span>Status</span><strong style="color:#10b981;">PAID</strong></div><button
+            class="btn-primary full large mt-4"
+            onclick="document.getElementById('invoiceModal').classList.remove('flex');">Close</button>
+      </div>
+   </div>
+   <div class="chat-widget" id="chatWidget" style="display:none;">
+      <div class="chat-header flex-between align-center" onclick="toggleChatBody()"><strong
+            style="color:white; margin:0;" id="chatArtistNameHeader">Chat</strong><span class="text-white"
+            style="cursor:pointer; font-size:1.5rem;">−</span></div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-input-area flex"><input type="text" id="chatInput" placeholder="Type..."
+            onkeypress="if(event.key==='Enter') sendChat()" style="flex:1; padding:10px;"><button onclick="sendChat()"
+            style="background:var(--accent); color:white; padding:0 20px;">Send</button></div>
+   </div>
+   <div class="modal" id="zoomModal">
+      <div class="modal-card auto-width transparent fade-in"><button class="close-btn zoom-close"
+            onclick="closeZoom()">✕</button><img id="zoomImage" src="" class="lightbox-img"></div>
+   </div>
+
+   <div class="modal" id="forumPostModal">
+      <div class="modal-card">
+         <button class="close-btn" onclick="document.getElementById('forumPostModal').classList.remove('flex')">✕</button>
+         <h2 class="mb-2">Create New Post</h2>
+         <p class="text-muted mb-4">Engage with the Artify community by sharing your thoughts or artworks.</p>
+
+         <label class="font-bold mb-1 block">Title</label>
+         <input type="text" id="forumPostTitle" class="form-input mb-3" placeholder="A catchy title for your post">
+
+         <label class="font-bold mb-1 block">Content</label>
+         <textarea id="forumPostContent" class="form-input mb-3" rows="4" placeholder="What's on your mind?"></textarea>
+
+         <label class="font-bold mb-1 block">Image URL (Optional)</label>
+         <input type="text" id="forumPostImg" class="form-input mb-4" placeholder="Paste an image link here">
+
+         <button class="btn-primary full large glossy" onclick="submitForumPost()">Post to Community</button>
+      </div>
+   </div>
+
+   <div class="modal" id="reviewModal">
+      <div class="modal-card">
+         <button class="close-btn" onclick="document.getElementById('reviewModal').classList.remove('flex')">✕</button>
+         <h2 class="text-center mb-2">Write a Review</h2>
+         <p class="text-center text-muted mb-4">How was your experience with <strong id="revModalArtist">the
+               Artist</strong>?</p>
+
+         <div class="flex justify-center mb-4">
+            <div class="star-rating-input" id="reviewStarContainer">
+               <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+               <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+               <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+               <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+               <input type="radio" id="star1" name="rating" value="1" checked><label for="star1">★</label>
+            </div>
+         </div>
+
+         <label class="font-bold mb-1 block">Your Comment</label>
+         <textarea id="revModalComment" class="form-input mb-4" rows="3"
+            placeholder="Describe the artwork quality and your experience..."></textarea>
+
+         <button class="btn-primary full large glossy" onclick="submitReview()">Submit Review</button>
+      </div>
+   </div>
+
+   <div class="toast" id="toastBox">Notification</div>
+
+   <script src="script.js"></script>
+</body>
+
+</html>
