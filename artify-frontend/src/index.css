@@ -1,0 +1,121 @@
+/* =============================================================================
+   AJIO-Style CSS Design Tokens & Base Reset
+   ============================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Colors */
+  --ajio-red: #D0021B;
+  --ajio-dark: #1A1A1A;
+  --ajio-light-gray: #F8F8F8;
+  --ajio-medium-gray: #EAEAEA;
+  --ajio-dark-gray: #2D2D2D;
+  --ajio-text-muted: #767676;
+  
+  /* Fonts */
+  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Layout */
+  --border-radius-flat: 0px;
+  --transition-smooth: all 0.25s ease-in-out;
+}
+
+/* Base resets */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-inter);
+  background-color: var(--ajio-light-gray);
+  color: var(--ajio-dark);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  max-width: 100% !important;
+  text-align: left !important;
+  border-inline: none !important;
+}
+
+/* Typography Helpers */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--ajio-dark);
+  letter-spacing: 0.5px;
+}
+
+.font-weight-black {
+  font-weight: 900;
+}
+.font-weight-bold {
+  font-weight: 700;
+}
+.letter-spacing-1 {
+  letter-spacing: 1px;
+}
+.letter-spacing-2 {
+  letter-spacing: 2px;
+}
+.fs-7 {
+  font-size: 0.85rem;
+}
+.fs-8 {
+  font-size: 0.75rem;
+}
+.fs-9 {
+  font-size: 0.65rem;
+}
+.text-xs {
+  font-size: 0.75rem;
+}
+.text-xxs {
+  font-size: 0.65rem;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.bg-dark-gray {
+  background-color: var(--ajio-dark-gray) !important;
+}
+.bg-light-gray {
+  background-color: var(--ajio-light-gray) !important;
+}
+.bg-ajio-red {
+  background-color: var(--ajio-red) !important;
+}
+.text-ajio-red {
+  color: var(--ajio-red) !important;
+}
+.text-ajio-dark {
+  color: var(--ajio-dark) !important;
+}
+.hover-underline:hover {
+  text-decoration: underline !important;
+}
+
+/* Utility Animations */
+@keyframes skeleton-glow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.ajio-skeleton {
+  background: linear-gradient(90deg, #F0F0F0 25%, #E5E5E5 50%, #F0F0F0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-glow 1.5s infinite linear;
+}

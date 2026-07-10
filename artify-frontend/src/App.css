@@ -1,0 +1,312 @@
+/* =============================================================================
+   AJIO-Style App Component-Specific Styles
+   ============================================================================= */
+
+/* Header & Top utility */
+.ajio-header {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  z-index: 1020;
+}
+.ajio-topbar {
+  background-color: var(--ajio-dark-gray);
+  color: #FFF;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+.topbar-links a {
+  color: #FFF;
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition-smooth);
+}
+.topbar-links a:hover {
+  color: var(--ajio-red);
+}
+
+.ajio-logo {
+  font-family: var(--font-inter);
+  font-weight: 900;
+  font-size: 24px;
+  letter-spacing: 2px;
+  color: var(--ajio-dark);
+}
+.logo-dot {
+  color: var(--ajio-red);
+}
+
+/* Category horizontal links */
+.category-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ajio-dark) !important;
+  letter-spacing: 1px;
+  padding: 8px 12px !important;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition-smooth);
+}
+.category-link:hover, 
+.category-link.active {
+  color: var(--ajio-red) !important;
+  border-bottom: 2px solid var(--ajio-red);
+}
+
+/* Prominent search bar */
+.ajio-search-form {
+  min-width: 320px;
+}
+.search-input {
+  border: 1px solid var(--ajio-medium-gray);
+  font-size: 13px;
+  background-color: var(--ajio-light-gray);
+  transition: var(--transition-smooth);
+}
+.search-input:focus {
+  background-color: #FFF;
+  border-color: var(--ajio-dark);
+  box-shadow: none;
+}
+
+.ajio-profile-dropdown {
+  border-radius: 0px !important;
+  border: 1px solid var(--ajio-medium-gray) !important;
+}
+
+.ajio-profile-dropdown .dropdown-item {
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.ajio-profile-dropdown .dropdown-item:hover {
+  background-color: var(--ajio-light-gray);
+  color: var(--ajio-red) !important;
+}
+
+.cart-badge {
+  font-size: 9px !important;
+  padding: 4px 6px !important;
+}
+
+/* Mobile Side Menu */
+.mobile-side-menu {
+  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+  transition: var(--transition-smooth);
+}
+.mobile-nav-links a {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+/* AJIO Button Styles */
+.btn-ajio-red {
+  background-color: var(--ajio-red);
+  color: #FFF;
+  border: 1px solid var(--ajio-red);
+  border-radius: 0px;
+  transition: var(--transition-smooth);
+}
+.btn-ajio-red:hover,
+.btn-ajio-red:focus {
+  background-color: #B00114;
+  border-color: #B00114;
+  color: #FFF;
+}
+.btn-ajio-red:disabled {
+  background-color: #E2A6AD;
+  border-color: #E2A6AD;
+}
+
+.btn-outline-ajio-red {
+  background-color: transparent;
+  color: var(--ajio-red);
+  border: 1px solid var(--ajio-red);
+  border-radius: 0px;
+  transition: var(--transition-smooth);
+}
+.btn-outline-ajio-red:hover {
+  background-color: var(--ajio-red);
+  color: #FFF;
+}
+
+.btn-outline-dark,
+.btn-dark {
+  border-radius: 0px !important;
+}
+
+.btn-outline-secondary {
+  border-radius: 0px !important;
+}
+
+/* AJIO Product Card Styles (Flat, simple, no glassmorphism) */
+.ajio-product-card {
+  box-shadow: none;
+  transition: box-shadow 0.25s ease-in-out;
+  border: 1px solid #EDEDED !important;
+}
+.ajio-product-card:hover {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+.product-image-container {
+  overflow: hidden;
+  position: relative;
+}
+.product-image-container img {
+  transition: transform 0.4s ease;
+}
+.ajio-product-card:hover .product-image-container img {
+  transform: scale(1.03);
+}
+.hover-scale-11:hover {
+  transform: scale(1.1);
+}
+.hover-scale-105:hover {
+  transform: scale(1.05);
+}
+
+.ajio-stats-card {
+  border: 1px solid var(--ajio-medium-gray) !important;
+}
+.stats-icon-container {
+  border: 1px solid var(--ajio-medium-gray);
+}
+
+/* Skeletons */
+.skeleton-image {
+  background-color: #EFEFEF;
+}
+.skeleton-text {
+  background-color: #EFEFEF;
+  border-radius: 2px;
+}
+.skeleton-btn {
+  background-color: #EFEFEF;
+}
+
+/* Order timeline */
+.timeline-steps-container {
+  padding-bottom: 20px;
+}
+.timeline-line {
+  position: absolute;
+  top: 15px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background-color: var(--ajio-medium-gray);
+  z-index: 1;
+}
+.timeline-step {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #FFF;
+  border: 2px solid var(--ajio-medium-gray);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ajio-text-muted);
+  transition: var(--transition-smooth);
+}
+.step-completed .step-circle {
+  border-color: var(--ajio-red);
+  background-color: var(--ajio-red);
+  color: #FFF;
+}
+.step-cancelled .step-circle {
+  border-color: #D32F2F;
+  background-color: #D32F2F;
+  color: #FFF;
+}
+.step-pending .step-circle {
+  border-color: var(--ajio-medium-gray);
+  background-color: #FFF;
+}
+
+/* Form-control defaults */
+.form-control, .form-select {
+  border-radius: 0px !important;
+  border: 1px solid var(--ajio-medium-gray) !important;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--ajio-dark) !important;
+  box-shadow: none !important;
+}
+
+/* Table styling override */
+.table-dark-gray {
+  background-color: var(--ajio-dark-gray) !important;
+}
+
+/* Spinner Custom */
+.ajio-spinner {
+  width: 45px;
+  height: 45px;
+  border: 3px solid var(--ajio-medium-gray);
+  border-top: 3px solid var(--ajio-red);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Helper styles for split views */
+.bg-gradient-dark {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+}
+.promo-banner-box {
+  border: 1px solid var(--ajio-medium-gray);
+}
+.max-h-300 {
+  max-height: 300px;
+}
+.max-w-700 {
+  max-width: 700px;
+}
+.max-w-800 {
+  max-width: 800px;
+}
+.min-vh-50 {
+  min-height: 50vh;
+}
+.min-vh-60 {
+  min-height: 60vh;
+}
+.block {
+  display: block;
+}
+.inline-block {
+  display: inline-block;
+}
+.cursor-pointer {
+  cursor: pointer;
+}
+.hover-ajio-red:hover {
+  color: var(--ajio-red) !important;
+}
+
+/* Customize alert styling */
+.alert-success {
+  background-color: #E8F5E9 !important;
+  color: #2E7D32 !important;
+}
+.alert-danger {
+  background-color: #FFEBEE !important;
+  color: #C62828 !important;
+}
+.alert-warning {
+  background-color: #FFFDE7 !important;
+  color: #F57F17 !important;
+}
+.alert-info {
+  background-color: #E3F2FD !important;
+  color: #1565C0 !important;
+}
