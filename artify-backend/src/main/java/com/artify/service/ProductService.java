@@ -36,8 +36,8 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
 
     public PagedResponse<ProductResponse> getAllProducts(int page, int size, Long categoryId,
-                                                         String search, Double minPrice, Double maxPrice,
-                                                         String sortBy, String sortDir) {
+            String search, Double minPrice, Double maxPrice,
+            String sortBy, String sortDir) {
         if (size > AppConstants.MAX_PAGE_SIZE) {
             size = AppConstants.MAX_PAGE_SIZE;
         }
@@ -184,7 +184,7 @@ public class ProductService {
     public ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
-                .artistId(product.getArtist().getId())
+                .artistId(product.getArtist() != null ? product.getArtist().getId() : null)
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .title(product.getTitle())
                 .description(product.getDescription())
@@ -193,7 +193,10 @@ public class ProductService {
                 .stock(product.getStock())
                 .status(product.getStatus().name())
                 .createdAt(product.getCreatedAt())
-                .artistName(product.getArtist().getUser().getName())
+                .artistName(
+                        product.getArtist() != null && product.getArtist().getUser() != null
+                                ? product.getArtist().getUser().getName()
+                                : null)
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .build();
     }

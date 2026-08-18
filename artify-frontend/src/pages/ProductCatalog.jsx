@@ -12,6 +12,7 @@ export const ProductCatalog = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Pagination states
   const [page, setPage] = useState(0);
@@ -72,16 +73,18 @@ export const ProductCatalog = () => {
 
       // Call API
       const response = await productService.getAllProducts(params);
-      
+
       // Handle both raw backend DTO shapes and simulated wrapper shapes
       if (response) {
         const prodContent = response.content || response.data?.content || response.data || [];
         setProducts(prodContent);
         setTotalPages(response.totalPages ?? 1);
         setTotalElements(response.totalElements ?? prodContent.length);
+        setError(null);
       }
     } catch (err) {
       console.error('Failed to fetch catalog artworks', err);
+      setError(err.message || 'Failed to load products');
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +105,7 @@ export const ProductCatalog = () => {
     if (updated.minPrice) query.minPrice = updated.minPrice;
     if (updated.maxPrice) query.maxPrice = updated.maxPrice;
     if (updated.rating) query.rating = updated.rating;
-    
+
     setSearchParams(query);
   };
 
@@ -137,8 +140,8 @@ export const ProductCatalog = () => {
             <label className="text-uppercase text-xs font-weight-bold text-dark mb-0 letter-spacing-1 flex-shrink-0">
               Sort By:
             </label>
-            <select 
-              className="form-select rounded-0 py-2 border fs-7" 
+            <select
+              className="form-select rounded-0 py-2 border fs-7"
               style={{ minWidth: '200px' }}
               value={`${sortBy},${sortDir}`}
               onChange={handleSortChange}
@@ -162,8 +165,11 @@ export const ProductCatalog = () => {
             />
           </div>
           <div className="col-lg-9">
+            {error && (
+              <div className="alert alert-danger mb-3">{error}. Please try again later.</div>
+            )}
             <ProductGrid products={products} isLoading={isLoading} />
-            
+
             <Pagination
               currentPage={page}
               totalPages={totalPages}

@@ -6,7 +6,7 @@ import CartSummary from '../components/cart/CartSummary';
 import { FaShoppingCart, FaChevronLeft } from 'react-icons/fa';
 
 export const Cart = () => {
-  const { cart, cartCount, updateCartItem, removeFromCart, isLoading } = useCart();
+  const { cart, cartCount, updateCartItem, removeFromCart, isLoading, error: cartError } = useCart();
   const navigate = useNavigate();
 
   const handleCheckout = () => {
@@ -34,6 +34,9 @@ export const Cart = () => {
   return (
     <div className="ajio-cart-page bg-light-gray py-4">
       <div className="container py-3">
+        {cartError && (
+          <div className="alert alert-danger">{cartError}. Please try again later.</div>
+        )}
         <h1 className="h4 text-uppercase font-weight-black text-dark mb-4 letter-spacing-1">
           SHOPPING BAG ({cartCount} {cartCount === 1 ? 'item' : 'items'})
         </h1>
@@ -61,7 +64,7 @@ export const Cart = () => {
                   onRemove={handleRemove}
                 />
               ))}
-              
+
               <div className="mt-4">
                 <Link to="/products" className="btn btn-outline-dark rounded-0 px-4 py-3 text-uppercase font-weight-bold text-xs letter-spacing-1 d-inline-flex align-items-center gap-2">
                   <FaChevronLeft size={10} /> Continue Shopping
