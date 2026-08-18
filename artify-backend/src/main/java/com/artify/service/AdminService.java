@@ -38,6 +38,7 @@ public class AdminService {
     private final OrderRepository orderRepository;
     private final ArtistRepository artistRepository;
 
+    @Transactional(readOnly = true)
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(this::mapToUserResponse)
@@ -80,6 +81,7 @@ public class AdminService {
         log.info("User deleted with id: {}", userId);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponse<ProductResponse> getAllProducts(int page, int size) {
         if (size > AppConstants.MAX_PAGE_SIZE) {
             size = AppConstants.MAX_PAGE_SIZE;
@@ -109,6 +111,7 @@ public class AdminService {
         log.info("Product deleted by admin with id: {}", productId);
     }
 
+    @Transactional(readOnly = true)
     public Map<String, Object> getReportSummary() {
         Map<String, Object> report = new HashMap<>();
         report.put("totalUsers", userRepository.count());
@@ -139,7 +142,7 @@ public class AdminService {
     private ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
-                .artistId(product.getArtist().getId())
+                .artistId(product.getArtist() != null ? product.getArtist().getId() : null)
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .title(product.getTitle())
                 .description(product.getDescription())
@@ -148,7 +151,7 @@ public class AdminService {
                 .stock(product.getStock())
                 .status(product.getStatus().name())
                 .createdAt(product.getCreatedAt())
-                .artistName(product.getArtist().getUser().getName())
+                .artistName(product.getArtist() != null && product.getArtist().getUser() != null ? product.getArtist().getUser().getName() : null)
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .build();
     }

@@ -33,7 +33,7 @@ export const CartProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     fetchCart();

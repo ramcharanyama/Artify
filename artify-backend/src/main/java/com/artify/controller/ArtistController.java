@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/artists")
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ArtistController {
 
     private final ArtistRepository artistRepository;
@@ -41,6 +43,7 @@ public class ArtistController {
 
     @PutMapping("/{id}/verify")
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     public ResponseEntity<ApiResponse<ArtistResponse>> verifyArtist(@PathVariable Long id) {
         Artist artist = artistRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Artist", "id", id));

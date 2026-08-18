@@ -52,6 +52,7 @@ public class ReviewService {
         return mapToReviewResponse(review);
     }
 
+    @Transactional(readOnly = true)
     public List<ReviewResponse> getReviewsByProduct(Long productId) {
         return reviewRepository.findByProductId(productId).stream()
                 .map(this::mapToReviewResponse)

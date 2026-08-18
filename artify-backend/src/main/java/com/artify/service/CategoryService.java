@@ -20,6 +20,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll().stream()
                 .map(this::mapToCategoryResponse)

@@ -157,7 +157,7 @@ public class CartService {
     private ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())
-                .artistId(product.getArtist().getId())
+                .artistId(product.getArtist() != null ? product.getArtist().getId() : null)
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .title(product.getTitle())
                 .description(product.getDescription())
@@ -166,7 +166,7 @@ public class CartService {
                 .stock(product.getStock())
                 .status(product.getStatus().name())
                 .createdAt(product.getCreatedAt())
-                .artistName(product.getArtist().getUser().getName())
+                .artistName(product.getArtist() != null && product.getArtist().getUser() != null ? product.getArtist().getUser().getName() : null)
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .build();
     }

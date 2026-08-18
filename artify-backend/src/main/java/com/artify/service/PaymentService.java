@@ -66,6 +66,7 @@ public class PaymentService {
         return mapToPaymentResponse(payment);
     }
 
+    @Transactional(readOnly = true)
     public PaymentResponse getPaymentByOrderId(Long orderId, Long userId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));

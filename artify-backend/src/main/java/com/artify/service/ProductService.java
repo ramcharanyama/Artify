@@ -35,6 +35,7 @@ public class ProductService {
     private final ArtistRepository artistRepository;
     private final CategoryRepository categoryRepository;
 
+    @Transactional(readOnly = true)
     public PagedResponse<ProductResponse> getAllProducts(int page, int size, Long categoryId,
             String search, Double minPrice, Double maxPrice,
             String sortBy, String sortDir) {
@@ -71,6 +72,7 @@ public class ProductService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public ProductResponse getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
@@ -154,6 +156,7 @@ public class ProductService {
         log.info("Product deleted with id: {}", productId);
     }
 
+    @Transactional(readOnly = true)
     public PagedResponse<ProductResponse> searchProducts(String query, int page, int size) {
         if (size > AppConstants.MAX_PAGE_SIZE) {
             size = AppConstants.MAX_PAGE_SIZE;
@@ -175,6 +178,7 @@ public class ProductService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public List<ProductResponse> getProductsByArtist(Long artistId) {
         return productRepository.findByArtistId(artistId).stream()
                 .map(this::mapToProductResponse)

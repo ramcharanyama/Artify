@@ -91,6 +91,7 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -106,6 +107,7 @@ public class AuthService {
                 .build();
     }
 
+    @Transactional(readOnly = true)
     public UserResponse getProfile(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
