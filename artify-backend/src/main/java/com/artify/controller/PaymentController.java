@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('CUSTOMER')")
 public class PaymentController {
 
     private final PaymentService paymentService;
     private final UserRepository userRepository;
 
     @PostMapping("/process")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<PaymentResponse>> processPayment(
             @AuthenticationPrincipal UserDetails userDetails,
             @Valid @RequestBody PaymentRequest request) {
@@ -36,12 +36,21 @@ public class PaymentController {
     }
 
     @GetMapping("/{orderId}")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<ApiResponse<PaymentResponse>> getPaymentByOrderId(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable Long orderId) {
         Long userId = getCurrentUserId(userDetails);
         PaymentResponse response = paymentService.getPaymentByOrderId(orderId, userId);
         return ResponseEntity.ok(ApiResponse.success("Payment retrieved successfully", response));
+    }
+
+    @PutMapping("/{orderId}/mark-cod-complete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<PaymentResponse>> markCODPaymentAsCompleted(
+            @PathVariable Long orderId) {
+        PaymentResponse response = paymentService.markCODPaymentAsCompleted(orderId);
+        return ResponseEntity.ok(ApiResponse.success("COD payment marked as completed", response));
     }
 
     private Long getCurrentUserId(UserDetails userDetails) {

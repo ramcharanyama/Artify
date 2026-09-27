@@ -41,6 +41,9 @@ public class CartService {
 
     @Transactional
     public CartResponse addItem(Long userId, CartItemRequest request) {
+        if (request.getProductId() == null) {
+            throw new com.artify.exception.BadRequestException("Product ID is required");
+        }
         Cart cart = getOrCreateCart(userId);
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", request.getProductId()));
