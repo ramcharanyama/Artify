@@ -48,21 +48,34 @@ public class PaymentService {
             throw new BadRequestException("Invalid payment method: " + request.getMethod());
         }
 
+        // COD payment remains PENDING until manually marked as completed by admin
+        PaymentStatus paymentStatus = PaymentMethod.CASH_ON_DELIVERY.equals(paymentMethod)
+                ? PaymentStatus.PENDING
+                : PaymentStatus.COMPLETED;
+        LocalDateTime paidAt = PaymentMethod.CASH_ON_DELIVERY.equals(paymentMethod)
+                ? null
+                : LocalDateTime.now();
+
         Payment payment = Payment.builder()
                 .order(order)
                 .method(paymentMethod)
                 .transactionId(UUID.randomUUID().toString())
                 .amount(order.getTotalAmount())
-                .status(PaymentStatus.COMPLETED)
-                .paidAt(LocalDateTime.now())
+                .status(paymentStatus)
+                .paidAt(paidAt)
                 .build();
 
         payment = paymentRepository.save(payment);
 
-        order.setStatus(OrderStatus.CONFIRMED);
-        orderRepository.save(order);
+        // For COD, order remains PENDING until payment is manually confirmed
+        // For other methods, order transitions to CONFIRMED immediately
+        if (!PaymentMethod.CASH_ON_DELIVERY.equals(paymentMethod)) {
+            order.setStatus(OrderStatus.CONFIRMED);
+            orderRepository.save(order);
+        }
 
-        log.info("Payment processed for order: {} with transaction: {}", order.getId(), payment.getTransactionId());
+        log.info("Payment processed for order: {} with method: {} and status: {}",
+                order.getId(), paymentMethod, paymentStatus);
         return mapToPaymentResponse(payment);
     }
 
@@ -78,6 +91,36 @@ public class PaymentService {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "orderId", orderId));
 
+        return mapToPaymentResponse(payment);
+    }
+
+    @Transactional
+    public PaymentResponse markCODPaymentAsCompleted(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "orderId", orderId));
+
+        if (!PaymentMethod.CASH_ON_DELIVERY.equals(payment.getMethod())) {
+            throw new BadRequestException("Payment method is not CASH_ON_DELIVERY. Cannot mark as completed.");
+        }
+
+        if (PaymentStatus.COMPLETED.equals(payment.getStatus())) {
+            throw new BadRequestException("Payment is already completed.");
+        }
+
+        payment.setStatus(PaymentStatus.COMPLETED);
+        payment.setPaidAt(LocalDateTime.now());
+        payment = paymentRepository.save(payment);
+
+        // Transition order from PENDING to CONFIRMED after COD payment is received
+        if (OrderStatus.PENDING.equals(order.getStatus())) {
+            order.setStatus(OrderStatus.CONFIRMED);
+            orderRepository.save(order);
+        }
+
+        log.info("COD payment marked as completed for order: {}", orderId);
         return mapToPaymentResponse(payment);
     }
 

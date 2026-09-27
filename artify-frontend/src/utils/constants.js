@@ -33,6 +33,7 @@ export const PAYMENT_METHODS = {
   UPI: 'UPI',
   NET_BANKING: 'NET_BANKING',
   WALLET: 'WALLET',
+  CASH_ON_DELIVERY: 'CASH_ON_DELIVERY',
 };
 
 export const PAYMENT_METHOD_LABELS = {
@@ -41,6 +42,7 @@ export const PAYMENT_METHOD_LABELS = {
   UPI: 'UPI',
   NET_BANKING: 'Net Banking',
   WALLET: 'Wallet',
+  CASH_ON_DELIVERY: 'Cash on Delivery',
 };
 
 export const PAGINATION = {
