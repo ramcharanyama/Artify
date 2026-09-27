@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import * as productService from '../services/productService';
 import * as categoryService from '../services/categoryService';
+import * as artistService from '../services/artistService';
 import StatsCard from '../components/dashboard/StatsCard';
 import { FaPalette, FaGlobe, FaTag, FaStar, FaPlus, FaTrash, FaEdit } from 'react-icons/fa';
 import { formatCurrency } from '../utils/formatters';
@@ -31,12 +32,21 @@ export const ArtistDashboard = () => {
     if (!user) return;
     setIsLoading(true);
     try {
-      const [prodRes, catsRes] = await Promise.all([
-        productService.getProductsByArtist(user.id),
+      const [allArtists, catsRes] = await Promise.all([
+        artistService.getAllArtists(),
         categoryService.getAllCategories(),
       ]);
-      setProducts(prodRes || []);
-      setCategories(catsRes || []);
+      
+      const artistList = allArtists?.data || allArtists || [];
+      const currentArtist = Array.isArray(artistList)
+        ? artistList.find(a => a.userId === user.id || a.user?.id === user.id)
+        : null;
+      const targetArtistId = currentArtist ? currentArtist.id : user.id;
+
+      const prodRes = await productService.getProductsByArtist(targetArtistId);
+      const prodList = prodRes?.data || prodRes || [];
+      setProducts(Array.isArray(prodList) ? prodList : []);
+      setCategories(catsRes?.data || catsRes || []);
     } catch (err) {
       console.error('Failed to load artist dashboard details', err);
       toast.error('Failed to retrieve portfolio details');
