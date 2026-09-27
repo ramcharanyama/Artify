@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -180,7 +181,12 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public List<ProductResponse> getProductsByArtist(Long artistId) {
-        return productRepository.findByArtistId(artistId).stream()
+        Long targetArtistId = artistId;
+        Optional<Artist> artistByUserId = artistRepository.findByUserId(artistId);
+        if (artistByUserId.isPresent()) {
+            targetArtistId = artistByUserId.get().getId();
+        }
+        return productRepository.findByArtistId(targetArtistId).stream()
                 .map(this::mapToProductResponse)
                 .collect(Collectors.toList());
     }
