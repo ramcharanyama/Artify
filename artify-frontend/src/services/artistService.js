@@ -26,3 +26,12 @@ export const verifyArtist = async (id) => {
     throw error;
   }
 };
+
+export const getMyArtistProfile = async () => {
+  try {
+    const response = await api.get('/artists/me');
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};

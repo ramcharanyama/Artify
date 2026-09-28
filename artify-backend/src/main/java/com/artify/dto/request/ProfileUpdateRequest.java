@@ -11,4 +11,8 @@ public class ProfileUpdateRequest {
     private String phone;
     private String address;
     private String avatarUrl;
+
+    // Artist-specific fields (ignored for non-artist users)
+    private String bio;
+    private String portfolioUrl;
 }

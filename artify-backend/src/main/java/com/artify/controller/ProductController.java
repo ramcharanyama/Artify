@@ -49,6 +49,15 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/mine")
+    @PreAuthorize("hasRole('ARTIST')")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getMyProducts(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long artistId = getArtistId(userDetails);
+        List<ProductResponse> response = productService.getMyProducts(artistId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
         ProductResponse response = productService.getProductById(id);

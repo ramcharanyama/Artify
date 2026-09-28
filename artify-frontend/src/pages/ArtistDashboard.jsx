@@ -13,6 +13,7 @@ export const ArtistDashboard = () => {
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [artistProfile, setArtistProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Listing creation/editing state
@@ -32,21 +33,19 @@ export const ArtistDashboard = () => {
     if (!user) return;
     setIsLoading(true);
     try {
-      const [allArtists, catsRes] = await Promise.all([
-        artistService.getAllArtists(),
+      const [prodRes, catsRes, artistRes] = await Promise.all([
+        productService.getMyProducts(),
         categoryService.getAllCategories(),
+        artistService.getMyArtistProfile().catch(() => null),
       ]);
       
-      const artistList = allArtists?.data || allArtists || [];
-      const currentArtist = Array.isArray(artistList)
-        ? artistList.find(a => a.userId === user.id || a.user?.id === user.id)
-        : null;
-      const targetArtistId = currentArtist ? currentArtist.id : user.id;
-
-      const prodRes = await productService.getProductsByArtist(targetArtistId);
       const prodList = prodRes?.data || prodRes || [];
       setProducts(Array.isArray(prodList) ? prodList : []);
       setCategories(catsRes?.data || catsRes || []);
+      const artistData = artistRes?.data || artistRes || null;
+      if (artistData && typeof artistData === 'object') {
+        setArtistProfile(artistData);
+      }
     } catch (err) {
       console.error('Failed to load artist dashboard details', err);
       toast.error('Failed to retrieve portfolio details');
@@ -65,7 +64,7 @@ export const ArtistDashboard = () => {
     setDescription('');
     setPrice('');
     setImageUrl('');
-    setCategoryId(categories[0]?.id || '');
+    setCategoryId(categories[0]?.id ? categories[0].id.toString() : '');
     setStock('1');
     setStatus('ACTIVE');
     setShowForm(true);
@@ -73,14 +72,15 @@ export const ArtistDashboard = () => {
 
   const handleOpenEditForm = (prod) => {
     setEditingProduct(prod);
-    setTitle(prod.title);
-    setDescription(prod.description);
-    setPrice(prod.price.toString());
-    setImageUrl(prod.imageUrl);
-    setCategoryId(prod.categoryId.toString());
-    setStock(prod.stock.toString());
-    setStatus(prod.status);
+    setTitle(prod.title || '');
+    setDescription(prod.description || '');
+    setPrice(prod.price != null ? prod.price.toString() : '');
+    setImageUrl(prod.imageUrl || '');
+    setCategoryId(prod.categoryId ? prod.categoryId.toString() : (categories[0]?.id ? categories[0].id.toString() : ''));
+    setStock(prod.stock != null ? prod.stock.toString() : '1');
+    setStatus(prod.status || 'ACTIVE');
     setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleFormSubmit = async (e) => {
@@ -109,16 +109,16 @@ export const ArtistDashboard = () => {
         res = await productService.createProduct(payload);
       }
 
-      if (res.success) {
+      if (res && (res.success || res.id)) {
         toast.success(editingProduct ? 'Artwork listing updated!' : 'Artwork listed successfully!');
         setShowForm(false);
         setEditingProduct(null);
-        loadArtistData(); // Refresh list
+        await loadArtistData(); // Refresh list without page refresh
       } else {
-        toast.error(res.message || 'Action failed');
+        toast.error(res?.message || 'Action failed');
       }
     } catch (err) {
-      toast.error(err.message || 'Operation failed');
+      toast.error(err.response?.data?.message || err.message || 'Operation failed');
     }
   };
 
@@ -126,14 +126,14 @@ export const ArtistDashboard = () => {
     if (window.confirm('Are you sure you want to delete this listing?')) {
       try {
         const res = await productService.deleteProduct(id);
-        if (res.success) {
+        if (res && (res.success || !res.message)) {
           toast.success('Listing deleted.');
-          loadArtistData();
+          await loadArtistData();
         } else {
-          toast.error(res.message || 'Delete failed');
+          toast.error(res?.message || 'Delete failed');
         }
       } catch (err) {
-        toast.error(err.message || 'Delete operation failed');
+        toast.error(err.response?.data?.message || err.message || 'Delete operation failed');
       }
     }
   };
@@ -142,9 +142,9 @@ export const ArtistDashboard = () => {
   const totalListings = products.length;
   const activeListings = products.filter(p => p.status === 'ACTIVE').length;
   const totalSalesCount = products.filter(p => p.status === 'SOLD').length;
-  const simulatedSalesEarnings = products
-    .filter(p => p.status === 'SOLD')
-    .reduce((sum, p) => sum + p.price, 0);
+  const avgRatingDisplay = (artistProfile?.rating && Number(artistProfile.rating) > 0)
+    ? Number(artistProfile.rating).toFixed(1)
+    : 'No ratings yet';
 
   return (
     <div className="ajio-dashboard bg-light-gray py-4">
@@ -320,7 +320,7 @@ export const ArtistDashboard = () => {
             <StatsCard
               icon={FaStar}
               label="Avg Star Rating"
-              value="4.5"
+              value={avgRatingDisplay}
             />
           </div>
         </div>
@@ -373,7 +373,13 @@ export const ArtistDashboard = () => {
                       <td className="py-2 text-ajio-red font-weight-bold">{formatCurrency(prod.price)}</td>
                       <td className="py-2 text-center">{prod.stock}</td>
                       <td className="py-2 text-center">
-                        <span className={`badge rounded-0 bg-dark-gray text-uppercase px-2 py-1`}>
+                        <span className={`badge rounded-0 text-uppercase px-2 py-1 fs-8 ${
+                          prod.status === 'ACTIVE' 
+                            ? 'bg-success text-white' 
+                            : prod.status === 'DRAFT' 
+                              ? 'bg-warning text-dark' 
+                              : 'bg-secondary text-white'
+                        }`}>
                           {prod.status}
                         </span>
                       </td>

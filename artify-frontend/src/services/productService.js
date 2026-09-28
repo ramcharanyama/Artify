@@ -2,11 +2,8 @@ import api from './api';
 
 export const getAllProducts = async (params = {}) => {
   try {
-    const raw = await api.get('/products', { params });
-    // Normalize payload: `api` response interceptor may return `response.data` directly.
-    const payload = raw && raw.data ? raw.data : raw;
-    console.log('productService.getAllProducts raw response:', raw);
-    return payload;
+    const response = await api.get('/products', { params });
+    return response;
   } catch (error) {
     throw error;
   }
@@ -60,6 +57,15 @@ export const searchProducts = async (q, page = 0, size = 10) => {
 export const getProductsByArtist = async (artistId) => {
   try {
     const response = await api.get(`/products/artist/${artistId}`);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getMyProducts = async () => {
+  try {
+    const response = await api.get('/products/mine');
     return response;
   } catch (error) {
     throw error;
