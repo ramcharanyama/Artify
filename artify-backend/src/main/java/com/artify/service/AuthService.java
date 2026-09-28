@@ -133,6 +133,20 @@ public class AuthService {
         }
 
         user = userRepository.save(user);
+
+        // Update artist-specific fields if user is an ARTIST
+        if (user.getRole() == Role.ARTIST) {
+            artistRepository.findByUserId(user.getId()).ifPresent(artist -> {
+                if (request.getBio() != null) {
+                    artist.setBio(request.getBio());
+                }
+                if (request.getPortfolioUrl() != null) {
+                    artist.setPortfolioUrl(request.getPortfolioUrl());
+                }
+                artistRepository.save(artist);
+            });
+        }
+
         return mapToUserResponse(user);
     }
 

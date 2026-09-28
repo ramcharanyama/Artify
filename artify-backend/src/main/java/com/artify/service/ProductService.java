@@ -6,6 +6,7 @@ import com.artify.dto.response.ProductResponse;
 import com.artify.exception.BadRequestException;
 import com.artify.exception.ResourceNotFoundException;
 import com.artify.exception.UnauthorizedException;
+import org.springframework.security.access.AccessDeniedException;
 import com.artify.model.Artist;
 import com.artify.model.Category;
 import com.artify.model.Product;
@@ -116,7 +117,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 
         if (!product.getArtist().getId().equals(artistId)) {
-            throw new UnauthorizedException("You are not authorized to update this product");
+            throw new AccessDeniedException("You are not authorized to update this product");
         }
 
         if (request.getCategoryId() != null) {
@@ -150,7 +151,7 @@ public class ProductService {
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
 
         if (!isAdmin && !product.getArtist().getId().equals(artistId)) {
-            throw new UnauthorizedException("You are not authorized to delete this product");
+            throw new AccessDeniedException("You are not authorized to delete this product");
         }
 
         productRepository.delete(product);
@@ -180,13 +181,15 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
+    public List<ProductResponse> getMyProducts(Long artistId) {
+        return productRepository.findByArtistId(artistId).stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<ProductResponse> getProductsByArtist(Long artistId) {
-        Long targetArtistId = artistId;
-        Optional<Artist> artistByUserId = artistRepository.findByUserId(artistId);
-        if (artistByUserId.isPresent()) {
-            targetArtistId = artistByUserId.get().getId();
-        }
-        return productRepository.findByArtistId(targetArtistId).stream()
+        return productRepository.findByArtistId(artistId).stream()
                 .map(this::mapToProductResponse)
                 .collect(Collectors.toList());
     }

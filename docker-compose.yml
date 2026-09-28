@@ -1,24 +1,26 @@
-version: '3.8'
-
 services:
   mysql:
-    image: mysql:8
+    image: mysql:8.0
+    container_name: art_git-mysql-1
     environment:
-      MYSQL_ROOT_PASSWORD: yourpassword
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: artify_db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./database/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
       - ./database/seed.sql:/docker-entrypoint-initdb.d/2-seed.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
+      test: [ "CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent" ]
+      interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 30s
 
   backend:
     build: ./artify-backend
+    container_name: art_git-backend-1
     ports:
       - "8081:8081"
     depends_on:
@@ -27,12 +29,15 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/artify_db
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: yourpassword
-      SERVER_PORT: 8081
+      SPRING_DATASOURCE_PASSWORD: root
 
   frontend:
     build: ./artify-frontend
+    container_name: art_git-frontend-1
     ports:
       - "5173:80"
     depends_on:
       - backend
+
+volumes:
+  mysql_data:

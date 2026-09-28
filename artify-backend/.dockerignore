@@ -1,4 +1,4 @@
-target/
-.git/
-.mvn/
-*.iml
+target
+.git
+.vscode
+*.log
