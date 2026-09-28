@@ -14,7 +14,7 @@ USE artify_db;
 -- USERS
 -- BCrypt hash of "Password@123" (cost factor 10)
 -- -----------------------------------------------------------------------------
-INSERT INTO users (id, email, password_hash, name, phone, address, avatar_url, role) VALUES
+INSERT INTO users (id, email, password, name, phone, address, avatar_url, role) VALUES
 (1, 'admin@artify.com',     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Arjun Mehta',    '+91-9000000001', '1 MG Road, Mumbai 400001',          'https://placehold.co/150?text=AM', 'ADMIN'),
 (2, 'priya@artify.com',     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Priya Sharma',   '+91-9000000002', '42 Art Lane, New Delhi 110001',     'https://placehold.co/150?text=PS', 'ARTIST'),
 (3, 'rahul@artify.com',     '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'Rahul Verma',    '+91-9000000003', '15 Canvas Road, Bangalore 560001',  'https://placehold.co/150?text=RV', 'ARTIST'),
@@ -56,7 +56,7 @@ INSERT INTO products (id, artist_id, category_id, title, description, price, ima
 -- -----------------------------------------------------------------------------
 -- CART (customer Ananya)
 -- -----------------------------------------------------------------------------
-INSERT INTO cart (id, user_id) VALUES
+INSERT INTO carts (id, user_id) VALUES
 (1, 4);
 
 INSERT INTO cart_items (id, cart_id, product_id, quantity) VALUES

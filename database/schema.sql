@@ -7,21 +7,23 @@
 -- =============================================================================
 CREATE DATABASE IF NOT EXISTS artify_db DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_unicode_ci;
 USE artify_db;
+
 -- -----------------------------------------------------------------------------
 -- 1. USERS
 -- -----------------------------------------------------------------------------
 CREATE TABLE users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20),
+    password VARCHAR(255) NOT NULL,
+    phone VARCHAR(255),
     address TEXT,
-    avatar_url VARCHAR(500),
+    avatar_url VARCHAR(255),
     role ENUM('CUSTOMER', 'ARTIST', 'ADMIN') NOT NULL DEFAULT 'CUSTOMER',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at DATETIME(6),
+    updated_at DATETIME(6)
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 2. ARTISTS  (1:1 with users where role = 'ARTIST')
 -- -----------------------------------------------------------------------------
@@ -29,51 +31,50 @@ CREATE TABLE artists (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE,
     bio TEXT,
-    portfolio_url VARCHAR(500),
-    is_verified BOOLEAN DEFAULT FALSE,
-    rating DECIMAL(2, 1) DEFAULT 0.0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    portfolio_url VARCHAR(255),
+    is_verified BIT(1) DEFAULT 0,
+    rating DOUBLE DEFAULT 0.0,
     CONSTRAINT fk_artist_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 3. CATEGORIES
 -- -----------------------------------------------------------------------------
 CREATE TABLE categories (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
-    image_url VARCHAR(500),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    image_url VARCHAR(255)
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 4. PRODUCTS
 -- -----------------------------------------------------------------------------
 CREATE TABLE products (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     artist_id BIGINT NOT NULL,
-    category_id BIGINT NOT NULL,
-    title VARCHAR(200) NOT NULL,
+    category_id BIGINT,
+    title VARCHAR(255) NOT NULL,
     description TEXT,
-    price DECIMAL(10, 2) NOT NULL,
-    image_url VARCHAR(500),
+    price DOUBLE NOT NULL,
+    image_url VARCHAR(255),
     stock INT NOT NULL DEFAULT 1,
     status ENUM('ACTIVE', 'SOLD', 'DRAFT') NOT NULL DEFAULT 'ACTIVE',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME(6),
+    updated_at DATETIME(6),
     CONSTRAINT fk_product_artist FOREIGN KEY (artist_id) REFERENCES artists(id) ON DELETE CASCADE,
     CONSTRAINT fk_product_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
--- 5. CART  (one cart per user)
+-- 5. CARTS  (one cart per user)
 -- -----------------------------------------------------------------------------
-CREATE TABLE cart (
+CREATE TABLE carts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_cart_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 6. CART_ITEMS
 -- -----------------------------------------------------------------------------
@@ -82,18 +83,19 @@ CREATE TABLE cart_items (
     cart_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_cartitem_cart FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE,
+    CONSTRAINT fk_cartitem_cart FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
     CONSTRAINT fk_cartitem_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     UNIQUE KEY uk_cart_product (cart_id, product_id)
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 7. ORDERS
 -- -----------------------------------------------------------------------------
 CREATE TABLE orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
-    total_amount DECIMAL(10, 2) NOT NULL,
+    total_amount DOUBLE NOT NULL,
+    shipping_address TEXT,
     status ENUM(
         'PENDING',
         'CONFIRMED',
@@ -101,11 +103,11 @@ CREATE TABLE orders (
         'DELIVERED',
         'CANCELLED'
     ) NOT NULL DEFAULT 'PENDING',
-    shipping_address TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME(6),
+    updated_at DATETIME(6),
     CONSTRAINT fk_order_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 8. ORDER_ITEMS
 -- -----------------------------------------------------------------------------
@@ -114,10 +116,11 @@ CREATE TABLE order_items (
     order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
-    price_at_purchase DECIMAL(10, 2) NOT NULL,
+    price_at_purchase DOUBLE NOT NULL,
     CONSTRAINT fk_orderitem_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     CONSTRAINT fk_orderitem_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 9. PAYMENTS  (1:1 with orders)
 -- -----------------------------------------------------------------------------
@@ -132,13 +135,13 @@ CREATE TABLE payments (
         'WALLET',
         'CASH_ON_DELIVERY'
     ) NOT NULL,
-    transaction_id VARCHAR(255),
-    amount DECIMAL(10, 2) NOT NULL,
+    transaction_id VARCHAR(255) UNIQUE,
+    amount DOUBLE NOT NULL,
     status ENUM('PENDING', 'COMPLETED', 'FAILED', 'REFUNDED') NOT NULL DEFAULT 'PENDING',
-    paid_at TIMESTAMP NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    paid_at DATETIME(6),
     CONSTRAINT fk_payment_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- 10. REVIEWS  (unique per user+product pair)
 -- -----------------------------------------------------------------------------
@@ -148,8 +151,7 @@ CREATE TABLE reviews (
     product_id BIGINT NOT NULL,
     rating INT NOT NULL,
     comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at DATETIME(6),
     CONSTRAINT fk_review_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_review_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     CONSTRAINT chk_rating CHECK (
@@ -157,6 +159,7 @@ CREATE TABLE reviews (
     ),
     UNIQUE KEY uk_user_product_review (user_id, product_id)
 ) ENGINE = InnoDB;
+
 -- -----------------------------------------------------------------------------
 -- INDEXES for query performance
 -- -----------------------------------------------------------------------------
